@@ -4,12 +4,11 @@ namespace App\View\Components\Table;
 
 use Closure;
 use App\Helper\DataBinder;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use Illuminate\View\Component;
 
-class Action extends Component
+class Action extends Main
 {
     public Model $model;
     public string $paramName;

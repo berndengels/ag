@@ -4,12 +4,11 @@ namespace App\View\Components\Table;
 
 use Closure;
 use App\Helper\DataBinder;
-use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 use App\Helper\HandleDataValue;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 
-class Td extends Component
+class Td extends Main
 {
     use HandleDataValue;
 
