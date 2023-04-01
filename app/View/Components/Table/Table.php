@@ -28,6 +28,7 @@ class Table extends Main
         public ?string $class = null,
     )
     {
+        parent::__construct();
         foreach ($this->fields as $field) {
             if(false !== stristr($field, ':')) {
                 [$f, $c] = explode(':', $field);

@@ -26,6 +26,7 @@ class Action extends Main
         public ?string $routePrefix = 'admin.'
     )
     {
+        parent::__construct();
         $this->model = app(DataBinder::class)->get();
         $this->paramName = lcfirst(Str::singular(class_basename($this->model)));
     }

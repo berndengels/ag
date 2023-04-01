@@ -39,6 +39,7 @@ class Td extends Main
         public ?string $dateformat = null
     )
     {
+        parent::__construct();
         $this->model = app(DataBinder::class)->get();
         if(false !== stristr($field, ':')) {
             [$f, $c] = explode(':', $field);

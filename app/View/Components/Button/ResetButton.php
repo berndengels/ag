@@ -18,6 +18,7 @@ class ResetButton extends Component
         public ?string $css = 'btn btn-secondary reset btn-sm inline ms-2'
     )
     {
+        parent::__construct();
     }
 
     /**
