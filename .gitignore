@@ -8,6 +8,7 @@
 /storage/*.key
 /vendor
 /docker
+/sail
 .DS_Store
 .env
 .env.backup
