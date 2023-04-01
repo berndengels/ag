@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Models;
+
+use Eloquent;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * App\Models\Location
+ *
+ * @property int $id
+ * @property int $zipcode
+ * @property string $place
+ * @property string $state
+ * @property string|null $community
+ * @property string|null $community_code
+ * @property string|null $latitude
+ * @property string|null $longitude
+ * @method static Builder|Location newModelQuery()
+ * @method static Builder|Location newQuery()
+ * @method static Builder|Location query()
+ * @method static Builder|Location whereCommunity($value)
+ * @method static Builder|Location whereCommunityCode($value)
+ * @method static Builder|Location whereId($value)
+ * @method static Builder|Location whereLatitude($value)
+ * @method static Builder|Location whereLongitude($value)
+ * @method static Builder|Location wherePlace($value)
+ * @method static Builder|Location whereState($value)
+ * @method static Builder|Location whereZipcode($value)
+ * @property-read Jobcenter|null $jobcenter
+ * @method static Builder|Location hasJobcenter()
+ * @method static Builder|Location hasNoJobcenter()
+ * @mixin Eloquent
+ */
+class Location extends Model
+{
+    use HasFactory;
+
+    protected $guarded = ['id'];
+    public $timestamps = false;
+
+    public function scopeHasNoJobcenter(Builder $builder)
+    {
+        return $builder->doesntHave('jobcenter');
+    }
+
+    public function scopeHasJobcenter(Builder $builder)
+    {
+        return $builder->has('jobcenter');
+    }
+
+    public function scopeHasNoArbeitsagentur(Builder $builder)
+    {
+        return $builder->doesntHave('arbeitsagentur');
+    }
+
+    public function scopeHasArbeitsagentur(Builder $builder)
+    {
+        return $builder->has('arbeitsagentur');
+    }
+
+    public function jobcenter()
+    {
+        return $this->hasOne(Jobcenter::class, 'customer_postcode', 'zipcode');
+    }
+
+    public function arbeitsagentur()
+    {
+        return $this->hasOne(Arbeitsagentur::class, 'customer_postcode', 'zipcode');
+    }
+}

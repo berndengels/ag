@@ -1,0 +1,46 @@
+//$fa-font-path: '../fontawesome/webfonts';
+
+html, body {
+	font-family: Verdana, Arial, "Helvetica Neue";
+}
+h1,h2,h3,h4,h5,h6 {
+    font-weight: bold;
+}
+h1 { font-size: 2.0rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1.1rem; }
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+a:hover {
+    color: red;
+}
+
+.btn {
+    :not(&.btn-sm) {
+        @apply font-bold py-2 px-4;
+    }
+    &.btn-sm {
+        @apply font-normal py-1 px-2;
+        font-size: 0.9rem;
+    }
+    &.rounded {
+        @apply rounded-full;
+    }
+    &.btn-blue {
+        @apply bg-blue-500 hover:bg-blue-700 text-white;
+    }
+    &.btn-green {
+        @apply bg-green-500 hover:bg-green-700 text-white;
+    }
+    &.btn-red {
+        @apply bg-red-500 hover:bg-red-700 text-white;
+    }
+    &.btn-grey {
+        @apply bg-gray-500 hover:bg-gray-700 text-white;
+    }
+}
