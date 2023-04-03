@@ -21,7 +21,7 @@ class ArbeitsagenturController extends Controller
 
     public function __construct()
     {
-        $this->locations = Location::all(['zipcode','place'])
+        $this->locations = Location::all(['zipcode','name'])
             ->keyBy('zipcode')
             ->map(fn($item) => $item->zipcode . ' ' .$item->name);
     }

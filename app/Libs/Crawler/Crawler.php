@@ -49,7 +49,7 @@ class Crawler implements ICrawler
             throw new Exception('location object must be set!');
         }
 
-        $this->url = str_replace(['%CITY%','%PLZ%'], [$this->location->place, $this->location->zipcode], $this->url);
+        $this->url = str_replace(['%CITY%','%PLZ%'], [$this->location->name, $this->location->zipcode], $this->url);
 
         $options = [
             RequestOptions::ALLOW_REDIRECTS => true,

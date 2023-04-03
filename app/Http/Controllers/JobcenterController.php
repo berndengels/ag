@@ -8,6 +8,7 @@ use App\Models\Jobcenter;
 use App\Models\Location;
 use App\Models\ZipCoordinate;
 use App\Repositories\JobcenterRepository;
+use App\Repositories\LocationRepository;
 use Laravel\Dusk\Chrome\SupportsChrome;
 use Illuminate\Http\Request;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
@@ -22,7 +23,8 @@ class JobcenterController extends Controller
 
     public function __construct()
     {
-        $this->locations = Location::all(['zipcode','place'])
+//        LocationRepository::repair();
+        $this->locations = Location::all(['zipcode','name'])
             ->keyBy('zipcode')
             ->map(fn($item) => $item->zipcode . ' ' .$item->name);
     }

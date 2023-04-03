@@ -42,6 +42,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $url
  * @method static Builder|Jobcenter whereInfo($value)
  * @method static Builder|Jobcenter whereUrl($value)
+ * @property string $customer_location
+ * @method static Builder|Jobcenter whereCustomerLocation($value)
  * @mixin Eloquent
  */
 class Jobcenter extends Model

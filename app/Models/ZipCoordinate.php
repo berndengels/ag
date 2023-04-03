@@ -28,6 +28,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ZipCoordinate whereLon($value)
  * @method static Builder|ZipCoordinate whereName($value)
  * @method static Builder|ZipCoordinate whereZipcode($value)
+ * @property-read Arbeitsagentur|null $arbeitsagentur
+ * @method static Builder|ZipCoordinate hasArbeitsagentur()
+ * @method static Builder|ZipCoordinate hasNoArbeitsagentur()
  * @mixin Eloquent
  */
 class ZipCoordinate extends Model

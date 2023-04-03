@@ -32,6 +32,13 @@ use Illuminate\Database\Eloquent\Builder;
  * @property-read Jobcenter|null $jobcenter
  * @method static Builder|Location hasJobcenter()
  * @method static Builder|Location hasNoJobcenter()
+ * @property string $name
+ * @property string|null $extra
+ * @property-read Arbeitsagentur|null $arbeitsagentur
+ * @method static Builder|Location hasArbeitsagentur()
+ * @method static Builder|Location hasNoArbeitsagentur()
+ * @method static Builder|Location whereExtra($value)
+ * @method static Builder|Location whereName($value)
  * @mixin Eloquent
  */
 class Location extends Model

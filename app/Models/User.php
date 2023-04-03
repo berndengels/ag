@@ -47,6 +47,8 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read Collection<int, PersonalAccessToken> $tokens
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
+ * @property-read Collection<int, PersonalAccessToken> $tokens
  * @mixin Eloquent
  */
 class User extends Authenticatable

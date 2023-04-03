@@ -45,7 +45,7 @@ abstract class ApiCrawlerController extends Controller
     public function crawle($postcode, $city)
     {
         $location = $this->locationModel::whereZipcode($postcode)
-            ->wherePlace($city)
+            ->whereName($city)
             ->first()
         ;
         /**

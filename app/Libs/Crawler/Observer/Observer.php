@@ -66,14 +66,14 @@ class Observer extends CrawlObserver
                         if($data) {
                             $data +=  [
                                 'customer_postcode' => $this->location->zipcode,
-                                'customer_location' => $this->location->place,
+                                'customer_location' => $this->location->name,
                                 'response' => $article->outerHtml(),
                             ];
                             $this->entry = $this->model::insertOrIgnore($data);
 /*
                             $condition = [
                                 'customer_postcode' => $this->location->zipcode,
-                                'customer_location' => $this->location->place,
+                                'customer_location' => $this->location->name,
                                 'info'      => $data['info'],
                                 'postcode'  => $data['postcode'],
                                 'city'      => $data['city'],

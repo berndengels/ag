@@ -4,7 +4,7 @@
         <h3>Anzahl Postleitzahlen: {{ count }}</h3>
         <h3>abgearbeitete Postleitzahlen: {{ counter + 1 }}</h3>
         <div class="mt-3">
-            <h3 v-if="currentLocation">Suche für Kunden in: {{ currentLocation.zipcode }} {{ currentLocation.place }}</h3>
+            <h3 v-if="currentLocation">Suche für Kunden in: {{ currentLocation.zipcode }} {{ currentLocation.name }}</h3>
             <h3 v-if="info" v-html="info"></h3>
             <p v-if="error">Keine Daten gefunden</p>
             <div class="container" v-if="entity">
@@ -80,7 +80,7 @@ export default {
                         return;
                     }
                     this.running = true;
-                    this.fetch(this.currentLocation.zipcode);
+                    this.fetch();
                 } catch(err) {
                     console.error(err);
                     this.info = "Suche beendet";
@@ -95,7 +95,7 @@ export default {
         fetch() {
             this.currentLocation = this.locations[this.counter] ?? null;
             if(this.currentLocation) {
-                axios.get(url + this.modus + "/crawle/" + this.currentLocation.zipcode + "/" + this.currentLocation.place)
+                axios.get(url + this.modus + "/crawle/" + this.currentLocation.zipcode + "/" + this.currentLocation.name)
                     .then(resp => {
                         if (resp.data.error) {
                             this.entity = null;
