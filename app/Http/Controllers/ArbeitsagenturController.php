@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use Illuminate\Http\Request;
 use App\Models\Arbeitsagentur;
 use App\Models\ZipCoordinate;
@@ -16,11 +17,11 @@ class ArbeitsagenturController extends Controller
 
     private $locations;
     private $baseUrl = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen';
-    private $url = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen?in=arbeitsagenturen&plz=%PLZ%';
+    private $url = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen?in=arbeitsagenturen&volltext=%CITY%&plz=%PLZ%';
 
     public function __construct()
     {
-        $this->locations = ZipCoordinate::all(['zipcode','name'])
+        $this->locations = Location::all(['zipcode','place'])
             ->keyBy('zipcode')
             ->map(fn($item) => $item->zipcode . ' ' .$item->name);
     }

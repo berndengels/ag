@@ -3,14 +3,11 @@
 namespace App\Libs\Crawler;
 
 use App\Models\Location;
-use App\Models\ZipCoordinate;
 use Eloquent;
 use Exception;
 use GuzzleHttp\RequestOptions;
 use App\Libs\Crawler\Observer\Observer;
 use App\Repositories\Traits\ResultParser;
-use Illuminate\Support\Facades\Log;
-use Spatie\Browsershot\Browsershot;
 use Spatie\Crawler\Crawler as SpatieCrawler;
 use Spatie\Crawler\CrawlProfiles\CrawlInternalUrls;
 
@@ -51,44 +48,23 @@ class Crawler implements ICrawler
         if(!$this->location) {
             throw new Exception('location object must be set!');
         }
-        $url = str_replace('%PLZ%', $this->location->zipcode, $this->url);
+
+        $this->url = str_replace(['%CITY%','%PLZ%'], [$this->location->place, $this->location->zipcode], $this->url);
+
         $options = [
             RequestOptions::ALLOW_REDIRECTS => true,
             RequestOptions::TIMEOUT => 30
         ];
-        $observer = new Observer($this->model, $this->location->zipcode);
+        $observer = new Observer($this->model, $this->location);
         SpatieCrawler::create($options)
             ->executeJavaScript()
             ->setTotalCrawlLimit(1)
             ->setDelayBetweenRequests(200)
             ->setCrawlObserver($observer)
             ->setCrawlProfile(new CrawlInternalUrls($this->baseUrl))
-            ->startCrawling($url)
-        ;
-        $this->entity = $this->model::whereCustomerPostcode($this->location->zipcode)->first();
-        return $this;
-    }
+            ->startCrawling($this->url);
 
-    /**
-     * @param ZipCoordinate $location
-     * @return $this
-     */
-    public function update():self
-    {
-        if(!$this->location) {
-            throw new Exception('location object must be set!');
-        }
-        if($this->entity && $this->entity->response) {
-            try {
-                $data = $this->parse($this->entity->response);
-                $this->entity->update($data);
-                $this->entity->refresh();
-            } catch (Exception $e) {
-                Log::error('update ' .$this->location->zipcode .': '. $e->getMessage());
-            }
-        } else {
-            Log::error('update no entity: ' . $this->location->zipcode);
-        }
+        $this->entity = $this->model::whereCustomerPostcode($this->location->zipcode)->get()->last();
         return $this;
     }
 
@@ -98,6 +74,14 @@ class Crawler implements ICrawler
     public function getEntity(): object|null
     {
         return $this->entity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
     /**

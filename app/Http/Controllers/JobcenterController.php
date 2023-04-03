@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreJobcenterRequest;
 use App\Http\Requests\UpdateJobcenterRequest;
 use App\Models\Jobcenter;
+use App\Models\Location;
 use App\Models\ZipCoordinate;
 use App\Repositories\JobcenterRepository;
 use Laravel\Dusk\Chrome\SupportsChrome;
@@ -17,11 +18,11 @@ class JobcenterController extends Controller
 
     private $locations;
     private $baseUrl = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen';
-    private $url = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen?in=jobcenter&plz=%PLZ%';
+    private $url = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen?in=jobcenter&volltext=%CITY%&plz=%PLZ%';
 
     public function __construct()
     {
-        $this->locations = ZipCoordinate::all(['zipcode','name'])
+        $this->locations = Location::all(['zipcode','place'])
             ->keyBy('zipcode')
             ->map(fn($item) => $item->zipcode . ' ' .$item->name);
     }

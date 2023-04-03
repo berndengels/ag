@@ -1,18 +1,22 @@
 <template>
     <div class="container mt-3" v-show="locations.length > 0">
         <h3>erledigt: {{ counter }}</h3>
-        <h3>noch verbleibende Postleitzahlen: {{ count }}</h3>
+        <h3>Anzahl Postleitzahlen: {{ count }}</h3>
+        <h3>abgearbeitete Postleitzahlen: {{ counter + 1 }}</h3>
         <div class="mt-3">
             <h3 v-if="currentLocation">Suche für Kunden in: {{ currentLocation.zipcode }} {{ currentLocation.place }}</h3>
             <h3 v-if="info" v-html="info"></h3>
             <p v-if="error">Keine Daten gefunden</p>
             <div class="container" v-if="entity">
-                <span class="font-bold" v-html="entity.name"></span>,
+                <span class="font-bold" v-html="entity.name"></span>
                 <span class="ml-2" v-html="entity.street + ', ' + entity.postcode + ' ' + entity.city"></span>
             </div>
             <div v-if="image" class="container justify-center justify-items-center">
                 <img class="self-center" height="200" :src="image" :alt="image" />
             </div>
+        </div>
+        <div v-if="url" class="mt-3">
+            <span>Such-URL: {{ url }}</span>
         </div>
         <div class="mt-3">
             <button v-if="!running" class="btn btn-green rounded" @click="crawle">Start Import</button>
@@ -24,7 +28,10 @@
 <script>
 import axios from "axios";
 
-const url = 'https://ag.test/api/';
+const url = 'https://ag.test/api/',
+    minDelay = 1000,
+    maxDelay = 2000;
+
 export default {
     name: "Crawler",
     props: ['modus'],
@@ -38,6 +45,7 @@ export default {
             error: false,
             info: null,
             image: null,
+            url: null,
             intVal: null,
             running: false
         }
@@ -62,15 +70,17 @@ export default {
                 .catch(err => console.error(err));
         },
         crawle() {
-            let delay = this.getRandomInt(2000, 4000);
-            this.running = true;
+            let delay = this.getRandomInt(minDelay, maxDelay);
             this.intVal = setInterval(() => {
                 try {
-                    this.counter++;
-                    this.currentLocation = this.locations[this.counter] ?? null;
-                    if(this.currentLocation) {
-                        this.fetch(this.currentLocation.zipcode);
+                    if(this.counter >= this.count - 1) {
+                        this.info = "Suche beendet";
+                        this.running = false;
+                        clearInterval(this.intVal);
+                        return;
                     }
+                    this.running = true;
+                    this.fetch(this.currentLocation.zipcode);
                 } catch(err) {
                     console.error(err);
                     this.info = "Suche beendet";
@@ -82,21 +92,26 @@ export default {
         stop(){
             clearInterval(this.intVal);
         },
-        fetch(postcode) {
-            axios.get(url + this.modus + "/crawle/" + postcode)
-                .then(resp => {
-                    if(resp.data.error) {
-                        this.entity = null;
-                        this.image = null;
-                        this.error = true;
-                    } else if(resp.data.entity) {
-                        this.entity = resp.data.entity;
-                        this.image = resp.data.image;
-                        this.error = false;
-                    }
-                    this.count--;
-                })
-                .catch(err => console.error(err));
+        fetch() {
+            this.currentLocation = this.locations[this.counter] ?? null;
+            if(this.currentLocation) {
+                axios.get(url + this.modus + "/crawle/" + this.currentLocation.zipcode + "/" + this.currentLocation.place)
+                    .then(resp => {
+                        if (resp.data.error) {
+                            this.entity = null;
+                            this.image = null;
+                            this.url = null;
+                            this.error = true;
+                        } else if (resp.data.entity) {
+                            this.url = resp.data.url;
+                            this.entity = resp.data.entity;
+                            this.image = resp.data.image;
+                            this.error = false;
+                        }
+                        this.counter++;
+                    })
+                    .catch(err => console.error(err));
+            }
         }
     }
 }

@@ -43,22 +43,22 @@ class Location extends Model
 
     public function scopeHasNoJobcenter(Builder $builder)
     {
-        return $builder->doesntHave('jobcenter');
+        return $builder->doesntHave('jobcenters');
     }
 
     public function scopeHasJobcenter(Builder $builder)
     {
-        return $builder->has('jobcenter');
+        return $builder->has('jobcenters');
     }
 
     public function scopeHasNoArbeitsagentur(Builder $builder)
     {
-        return $builder->doesntHave('arbeitsagentur');
+        return $builder->doesntHave('arbeitsagenturen');
     }
 
     public function scopeHasArbeitsagentur(Builder $builder)
     {
-        return $builder->has('arbeitsagentur');
+        return $builder->has('arbeitsagenturen');
     }
 
     public function jobcenter()

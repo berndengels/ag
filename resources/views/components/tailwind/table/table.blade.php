@@ -1,5 +1,5 @@
 @if($items->count())
-    <table class="table-auto caption-top border-collapse {{ $class }}">
+    <table class="table-fixed caption-top border-collapse {{ $class }}">
         <thead>
             <tr>
                 @foreach($captions as $field)

@@ -42,25 +42,29 @@ abstract class ApiCrawlerController extends Controller
         return response()->json(['count' => $locations->count()]);
     }
 
-    public function crawle($postcode)
+    public function crawle($postcode, $city)
     {
-        $location = $this->locationModel::whereZipcode($postcode)->first();
+        $location = $this->locationModel::whereZipcode($postcode)
+            ->wherePlace($city)
+            ->first()
+        ;
         /**
          * @var MyCrawler $crawler
          */
         $crawler = new $this->crawler();
-        $entity = $crawler
+        $run = $crawler
             ->setLocation($location)
             ->run()
-            ->getEntity()
         ;
-        $imageURL   = '/storage/browsershot/'.$postcode.'.jpg';
-        $imagePath  = public_path('storage/browsershot/') . $postcode.'.jpg';
+
+//        $imageURL   = '/storage/browsershot/'.$postcode.'.jpg';
+//        $imagePath  = public_path('storage/browsershot/') . $postcode.'.jpg';
 
         $response = [
-            'error' => $entity ? false : true,
-            'entity' => $entity,
-            'image' => file_exists($imagePath) ? $imageURL : null,
+            'error' => $run->getEntity() ? false : true,
+            'entity' => $run->getEntity(),
+            'url'   => $run->getUrl(),
+//            'image' => file_exists($imagePath) ? $imageURL : null,
         ];
         return response()->json($response);
     }

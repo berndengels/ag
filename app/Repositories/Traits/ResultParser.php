@@ -9,7 +9,7 @@ trait ResultParser
     public function parse(DomCrawler $article)
     {
         if('Keine Treffer' === $article->attr('aria-label')) {
-            return ['error' => 'Keine Treffer'];
+            return null;
         }
 
         $a      = $article->filter('h3 a');

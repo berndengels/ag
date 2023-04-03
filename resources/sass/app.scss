@@ -19,17 +19,39 @@ a {
 a:hover {
     color: red;
 }
-
+table {
+    tr {
+        td {
+            &.table-action {
+                white-space: nowrap;
+            }
+        }
+    }
+}
 .btn {
-    :not(&.btn-sm) {
-        @apply font-bold py-2 px-4;
+    display: inline;
+    padding: 0;
+    width: auto;
+//    max-width: 100px;
+    border-radius: 5px;
+    white-space: nowrap;
+    i {
+        margin: 0;
+        padding: 0;
+    }
+    span {
+        margin: 0;
+        padding: 0;
+    }
+    :not( &.btn-sm) {
+        @apply font-bold py-1 p-2;
     }
     &.btn-sm {
-        @apply font-normal py-1 px-2;
+        @apply font-normal py-1 p-1;
         font-size: 0.9rem;
     }
     &.rounded {
-        @apply rounded-full;
+        @apply rounded-full py-2 p-4;
     }
     &.btn-blue {
         @apply bg-blue-500 hover:bg-blue-700 text-white;

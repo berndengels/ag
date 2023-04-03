@@ -1,7 +1,7 @@
-<x-form action="{{ $route }}"
-        class="d-inline-block m-0 p-0">
+<x-form action="{{ $route }}">
     @method('delete')
-    <x-form-submit icon="fas fa-trash-alt" inline class="mt-0 btn-sm btn-outline-danger delSoft">
-        <span class="d-none d-md-inline-block">Löschen</span>
+    <x-form-submit inline class="btn btn-red delsoft">
+        <i class="fas fa-trash-alt"></i>
+        <span class="hidden md:inline md:ml-2">Löschen</span>
     </x-form-submit>
 </x-form>

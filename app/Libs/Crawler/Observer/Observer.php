@@ -2,12 +2,14 @@
 
 namespace App\Libs\Crawler\Observer;
 
-use App\Repositories\Traits\ResultParser;
+use App\Models\Location;
+use Eloquent;
 use Exception;
 use App\Models\Crawler;
 use App\Libs\Crawler\Symfony;
 use Psr\Http\Message\UriInterface;
 use GuzzleHttp\Exception\RequestException;
+use App\Repositories\Traits\ResultParser;
 use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
 use Spatie\Browsershot\Browsershot;
@@ -17,13 +19,15 @@ use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 class Observer extends CrawlObserver
 {
     use ResultParser;
+
     /**
      * @var Symfony\Component\DomCrawler\Crawler
      */
     public $result;
+    private $entry;
     public function __construct(
         protected string $model,
-        protected string $postcode
+        protected Location $location
     ) {}
 
     /**
@@ -53,17 +57,31 @@ class Observer extends CrawlObserver
             // a-no-results
             if($crawler->filter('body a-no-results')->count() > 0) {
                 Log::info($this->postcode . ': no search results');
-                echo json_encode(['error' => 'no search results for postcode: ' . $this->postcode]);
+                echo json_encode(['error' => 'no search results for postcode: ' . $this->location->zipcode]);
             } else {
                 $this->result = $crawler->filter('body .search-results-content');
                 if($this->result->count() > 0) {
                     $this->result->first()->filter('article')->each(function(DomCrawler $article) {
                         $data = $this->parse($article);
-                        $data +=  [
-                            'customer_postcode' => $this->postcode,
-                            'response' => $article->outerHtml(),
-                        ];
-                        $this->model::updateOrCreate(['customer_postcode' => $this->postcode], $data);
+                        if($data) {
+                            $data +=  [
+                                'customer_postcode' => $this->location->zipcode,
+                                'customer_location' => $this->location->place,
+                                'response' => $article->outerHtml(),
+                            ];
+                            $this->entry = $this->model::insertOrIgnore($data);
+/*
+                            $condition = [
+                                'customer_postcode' => $this->location->zipcode,
+                                'customer_location' => $this->location->place,
+                                'info'      => $data['info'],
+                                'postcode'  => $data['postcode'],
+                                'city'      => $data['city'],
+                                'street'    => $data['street'],
+                            ];
+                            $this->model::updateOrCreate($condition, $data);
+*/
+                        }
                     });
 //                    $file = storage_path('app/public/browsershot/') . $this->postcode.'.jpg';
 //                    $this->screenshot($html, $url, $file);
@@ -95,7 +113,7 @@ class Observer extends CrawlObserver
      */
     public function finishedCrawling(): void
     {
-        //
+
     }
 
     protected function screenshot($html, $url, $file)
@@ -115,5 +133,13 @@ class Observer extends CrawlObserver
             ->save($file)
 //            ->screenshot()
         ;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEntry()
+    {
+        return $this->entry;
     }
 }

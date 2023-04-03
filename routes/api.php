@@ -13,12 +13,12 @@ Route::group([
 ], function () {
     Route::get('locations', [ApiJobcenterCrawlerController::class, 'locations']);
     Route::get('count', [ApiJobcenterCrawlerController::class, 'count']);
-    Route::get('crawle/{postcode}', [ApiJobcenterCrawlerController::class, 'crawle']);
+    Route::get('crawle/{postcode}/{city}', [ApiJobcenterCrawlerController::class, 'crawle']);
 });
 Route::group([
     'prefix'    => 'arbeitsagentur',
 ], function () {
     Route::get('locations', [ApiArbeitsagenturCrawlerController::class, 'locations']);
     Route::get('count', [ApiArbeitsagenturCrawlerController::class, 'count']);
-    Route::get('crawle/{postcode}', [ApiArbeitsagenturCrawlerController::class, 'crawle']);
+    Route::get('crawle/{postcode}/{city}', [ApiArbeitsagenturCrawlerController::class, 'crawle']);
 });

@@ -1,7 +1,7 @@
-<x-nav-link
+<a
     href="{{ $route }}"
-    icon="fas fa-backward"
-    class="btn btn-sm btn-outline-primary"
+    class="btn btn-sm btn-blue rounded"
 >
-    <span class="d-none d-md-inline-block">zurück</span>
-</x-nav-link>
+    <i class="fas fa-backward"></i>
+    <span class="hidden md:inline">zurück</span>
+</a>
