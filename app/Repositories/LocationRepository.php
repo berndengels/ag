@@ -19,4 +19,21 @@ class LocationRepository
             }
         });
     }
+
+    public static function setJcFound()
+    {
+        Location::has('jobcenter')
+            ->get()->each(function(Location $location) {
+                $location->update(['found_jc' => 1]);
+            });
+
+    }
+
+    public static function setAaFound()
+    {
+        Location::has('arbeitsagentur')
+            ->get()->each(function(Location $location) {
+                $location->update(['found_aa' => 1]);
+            });
+    }
 }

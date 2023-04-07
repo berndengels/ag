@@ -1,4 +1,4 @@
-INSERT INTO `opt_jobcenters`(
+INSERT IGNORE INTO `opt_jobcenters`(
     name,
     info,
     url,
@@ -21,7 +21,7 @@ SELECT
     opening_time
 FROM `jobcenters`;
 
-INSERT INTO `opt_arbeitsagenturen`(
+INSERT IGNORE INTO `opt_arbeitsagenturen`(
     name,
     info,
     url,
@@ -130,3 +130,11 @@ SELECT
 FROM locations l USE INDEX (l)
 WHERE NOT EXISTS (SELECT zipcode FROM zip_coordinates z WHERE z.zipcode=l.zipcode)
 ORDER BY l.zipcode;
+
+-- update found on locations
+SELECT
+    j.customer_postcode
+FROM locations l
+         JOIN jobcenters j ON j.name=oj.name
+GROUP BY oj.id
+    WHERE j.customer_postcode=SELECT customer_postcode FROM customer_postcodes WHERE j.customer_postcode

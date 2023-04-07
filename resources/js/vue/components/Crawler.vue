@@ -1,8 +1,9 @@
 <template>
     <div class="container mt-3" v-show="locations.length > 0">
         <h3>erledigt: {{ counter }}</h3>
-        <h3>Anzahl Postleitzahlen: {{ count }}</h3>
-        <h3>abgearbeitete Postleitzahlen: {{ counter + 1 }}</h3>
+        <h3>zu erfassende Adressen: {{ count }}</h3>
+        <h5>gefunden: {{ success }}</h5>
+        <h5>nicht gefunden: {{ notfound }}</h5>
         <div class="mt-3">
             <h3 v-if="currentLocation">Suche für Kunden in: {{ currentLocation.zipcode }} {{ currentLocation.name }}</h3>
             <h3 v-if="info" v-html="info"></h3>
@@ -41,6 +42,8 @@ export default {
             locations: [],
             currentLocation: null,
             count: 0,
+            success: 0,
+            notfound: 0,
             entity: null,
             error: false,
             info: null,
@@ -102,16 +105,26 @@ export default {
                             this.image = null;
                             this.url = null;
                             this.error = true;
+                            this.notfound++;
                         } else if (resp.data.entity) {
                             this.url = resp.data.url;
                             this.entity = resp.data.entity;
                             this.image = resp.data.image;
                             this.error = false;
+                            this.setFound(this.currentLocation);
+                            this.success++;
                         }
                         this.counter++;
                     })
                     .catch(err => console.error(err));
             }
+        },
+        setFound(location) {
+            axios.patch(url + this.modus + "/found/" + location.id)
+                .then(resp => {
+                    console.info(this.modus + 'founded', location)
+                })
+                .catch(err => console.error(err));
         }
     }
 }

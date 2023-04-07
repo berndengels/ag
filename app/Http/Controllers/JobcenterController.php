@@ -23,7 +23,7 @@ class JobcenterController extends Controller
 
     public function __construct()
     {
-//        LocationRepository::repair();
+        LocationRepository::setJcFound();
         $this->locations = Location::all(['zipcode','name'])
             ->keyBy('zipcode')
             ->map(fn($item) => $item->zipcode . ' ' .$item->name);

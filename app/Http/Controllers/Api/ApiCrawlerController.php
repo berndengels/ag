@@ -17,14 +17,15 @@ abstract class ApiCrawlerController extends Controller
      */
     protected $crawler;
     protected $locationModel = Location::class;
+    protected $foundField;
 
     /**
      * Display a listing of the resource.
      */
     public function locations()
     {
-        $locations = $this->locationModel::doesntHave($this->relation)
-            ->groupBy('zipcode')
+        $locations = $this->locationModel::where($this->foundField, '=', 0)
+            ->groupBy('zipcode','name')
             ->get()
         ;
         return response()->json(['locations' => $locations]);
@@ -35,8 +36,8 @@ abstract class ApiCrawlerController extends Controller
      */
     public function count()
     {
-        $locations = $this->locationModel::has($this->relation)
-            ->groupBy('zipcode')
+        $locations = $this->locationModel::where($this->foundField, '=', 1)
+            ->groupBy('zipcode','name')
             ->get()
         ;
         return response()->json(['count' => $locations->count()]);
@@ -67,6 +68,13 @@ abstract class ApiCrawlerController extends Controller
 //            'image' => file_exists($imagePath) ? $imageURL : null,
         ];
         return response()->json($response);
+    }
+
+    public function setFounded(Location $location)
+    {
+        $location->update([$this->foundField => 1]);
+        $location->refresh();
+        return response()->json($location);
     }
 
     /**
