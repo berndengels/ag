@@ -37,7 +37,7 @@ class ZipCoordinate extends Model
 {
     use HasFactory;
 
-    protected $table = 'zip_coordinates';
+    protected $table = 'locations';
     protected $guarded = ['id'];
     public $timestamps = false;
 

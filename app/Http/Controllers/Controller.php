@@ -9,5 +9,5 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-    protected $paginatorLimit = 20;
+    protected $paginatorLimit = 50;
 }

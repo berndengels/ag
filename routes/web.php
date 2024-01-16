@@ -2,31 +2,27 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\JobcenterController;
-use App\Http\Controllers\ArbeitsagenturController;
+use App\Http\Controllers\LocationController;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
 Route::get('/', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('locations', [LocationController::class, 'index']);
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group([
-    'prefix'    => 'admin',
-    'as'        => 'admin.',
-    'middleware' => ['auth'],
-], function() {
-    Route::get('jobcenters/crawle', [JobcenterController::class, 'crawle'])->name('jobcenters.crawle');
-    Route::resource('jobcenters', JobcenterController::class);
-    Route::post('jobcenters', [JobcenterController::class, 'search'])->name('jobcenters.search');
-
-    Route::get('arbeitsagenturen/crawle', [ArbeitsagenturController::class, 'crawle'])->name('arbeitsagenturen.crawle');
-    Route::resource('arbeitsagenturen', ArbeitsagenturController::class);
-    Route::post('arbeitsagenturen', [ArbeitsagenturController::class, 'search'])->name('arbeitsagenturen.search');
-});
-Route::get('phpinfo', fn() => phpinfo());
 require __DIR__.'/auth.php';

@@ -77,4 +77,9 @@ class Location extends Model
     {
         return $this->hasOne(Arbeitsagentur::class, 'customer_postcode', 'zipcode');
     }
+
+	public function community()
+	{
+		return $this->belongsTo(Community::class);
+	}
 }

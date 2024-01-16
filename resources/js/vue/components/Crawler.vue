@@ -1,12 +1,12 @@
 <template>
     <div class="container mt-3" v-show="locations.length > 0">
-        <h3>erledigt: {{ counter }}</h3>
-        <h3>zu erfassende Adressen: {{ count }}</h3>
+        <h5>erledigt: {{ counter }}</h5>
+        <h5>zu erfassende Adressen: {{ count }}</h5>
         <h5>gefunden: {{ success }}</h5>
         <h5>nicht gefunden: {{ notfound }}</h5>
         <div class="mt-3">
-            <h3 v-if="currentLocation">Suche für Kunden in: {{ currentLocation.zipcode }} {{ currentLocation.name }}</h3>
-            <h3 v-if="info" v-html="info"></h3>
+            <h5 v-if="currentLocation">Suche für Kunden in: {{ currentLocation.zipcode }} {{ currentLocation.name }}</h5>
+            <h5 v-if="info" v-html="info"></h5>
             <p v-if="error">Keine Daten gefunden</p>
             <div class="container" v-if="entity">
                 <span class="font-bold" v-html="entity.name"></span>

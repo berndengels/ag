@@ -36,9 +36,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        URL::forceScheme(env('FORCE_SCHEME', 'http'));
+        URL::forceScheme(env('FORCE_SCHEME', 'https'));
         Schema::defaultStringLength(191);
-        Paginator::useTailwind();
+        Paginator::useBootstrapFive();
         env('APP_DEBUG_BAR', false) ? Debugbar::enable() : Debugbar::disable();
         Blade::components([
             'table'         => Table::class,
