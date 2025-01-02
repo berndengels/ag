@@ -1,11 +1,12 @@
 <template>
     <div class="component p-4">
-        <label for="modus">Modus wählen: </label>
-        <select id="modus" v-model="modus">
-            <option value="">bitte wählen</option>
-            <option value="jobcenter">Jobcenter</option>
-            <option value="arbeitsagentur">Arbeitsagentur</option>
-        </select>
+		<form class="form-floating w-25">
+			<select id="modus" v-model="modus" class="form-control d-inline-block ms-3">
+				<option value="">Modus wählen ...</option>
+				<option value="jobcenter">Jobcenter</option>
+				<option value="arbeitsagentur">Arbeitsagentur</option>
+			</select>
+		</form>
         <br>
         <Crawler v-if="modus" :modus="modus"/>
     </div>

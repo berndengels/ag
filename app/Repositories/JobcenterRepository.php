@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Jobcenter;
 use App\Repositories\Traits\ResultParser;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 

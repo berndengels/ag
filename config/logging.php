@@ -56,20 +56,32 @@ return [
             'channels' => ['single'],
             'ignore_exceptions' => false,
         ],
-
+		'singleCrawler' => [
+			'driver' => 'single',
+			'path' => storage_path('logs/crawler.log'),
+			'level' => env('LOG_LEVEL', 'debug'),
+			'permission'	=> 0777,
+		],
+		'crawler' => [
+			'driver' => 'stack',
+			'path' => storage_path('logs/crawler.log'),
+			'channels' => ['singleCrawler'],
+			'ignore_exceptions' => false,
+			'permission'	=> 0777,
+		],
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+			'permission'	=> 0777,
         ],
-
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+			'permission'	=> 0777,
             'days' => 14,
         ],
-
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -77,7 +89,6 @@ return [
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'critical'),
         ],
-
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -88,7 +99,6 @@ return [
                 'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
         ],
-
         'stderr' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -98,26 +108,21 @@ return [
                 'stream' => 'php://stderr',
             ],
         ],
-
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),
             'facility' => LOG_USER,
         ],
-
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => env('LOG_LEVEL', 'debug'),
         ],
-
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,
         ],
-
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
     ],
-
 ];

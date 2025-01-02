@@ -6,18 +6,14 @@ use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 
 trait ResultParser
 {
-    public function parse(DomCrawler $article)
+    public function parse(DomCrawler $dom): array
     {
-        if('Keine Treffer' === $article->attr('aria-label')) {
-            return null;
-        }
-
-        $a      = $article->filter('h3 a');
+        $a      = $dom->filter('h2.title a');
         $name   = trim($a->text());
         $url    = $a->attr('href');
         $info   = null;
-        $body   = $article->filter('div.search-results-body div.row');
-        $sections           = $body->filter('.search-results-body-section');
+        $body   = $dom->filter('div.search-results-body div.row');
+		$sections           = $body->filter('.search-results-body-section');
         $visitorAddress     = $sections->first()->filter('.visitor-address span');
         $street             = trim($visitorAddress->first()->text());
         [$postcode, $city]  = explode('&nbsp;', htmlentities(trim($visitorAddress->last()->text())), 2);
@@ -68,6 +64,6 @@ trait ResultParser
             'opening_time'  => $openingTime ? html_entity_decode(string: $openingTime, encoding: 'UTF-8') : null
         ];
 
-        return $data;
+		return $data;
     }
 }

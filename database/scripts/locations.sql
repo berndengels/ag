@@ -15,3 +15,8 @@ JOIN communities c ON c.name = l.community AND c.code = l.community_code
 SET l.community_id = c.id;
 
 UPDATE locations SET found_jc=0,found_aa=0;
+
+SELECT
+    zipcode
+FROM locations
+GROUP BY zipcode;

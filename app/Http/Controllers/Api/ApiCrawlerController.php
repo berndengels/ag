@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Location;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LocationResource;
 use App\Libs\Crawler\Crawler as MyCrawler;
 
 abstract class ApiCrawlerController extends Controller
@@ -24,10 +24,13 @@ abstract class ApiCrawlerController extends Controller
      */
     public function locations()
     {
-        $locations = $this->locationModel::where($this->foundField, '=', 0)
-            ->groupBy('zipcode','name')
-            ->get()
+        $locations = $this->locationModel::select(['id','zipcode','name'])
+			->where($this->foundField, '=', 0)
+            ->groupBy('zipcode')
+            ->get(['id','zipcode','name'])
         ;
+		$locations = LocationResource::collection($locations);
+
         return response()->json(['locations' => $locations]);
     }
 
@@ -36,19 +39,34 @@ abstract class ApiCrawlerController extends Controller
      */
     public function count()
     {
-        $locations = $this->locationModel::where($this->foundField, '=', 1)
-            ->groupBy('zipcode','name')
-            ->get()
+        $count = $this->locationModel::where($this->foundField, '=', 1)
+			->groupBy('zipcode')
+            ->count()
         ;
-        return response()->json(['count' => $locations->count()]);
+        return response()->json(['count' => $count]);
     }
 
-    public function crawle($postcode, $city)
+    public function crawle($postcode, $city = null)
     {
-        $location = $this->locationModel::whereZipcode($postcode)
-            ->whereName($city)
-            ->first()
-        ;
+		$query = $this->locationModel::select()
+			->whereZipcode($postcode);
+/*
+		if($city) {
+			$query->whereName($city);
+		}
+*/
+        $location = $query->first();
+
+		if(!$location) {
+			$response = [
+				'error' => 'no location found',
+				'entity' => null,
+				'url'   => null,
+			];
+
+			return response()->json($response);
+		}
+
         /**
          * @var MyCrawler $crawler
          */
@@ -74,38 +92,7 @@ abstract class ApiCrawlerController extends Controller
     {
         $location->update([$this->foundField => 1]);
         $location->refresh();
+
         return response()->json($location);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

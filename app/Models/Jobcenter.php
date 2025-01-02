@@ -2,11 +2,7 @@
 
 namespace App\Models;
 
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Jobcenter
@@ -48,6 +44,7 @@ use Illuminate\Support\Carbon;
  */
 class Jobcenter extends Model
 {
-    use HasFactory;
+	protected $table = 'jobcenters';
     protected $guarded = ['id'];
+	public $timestamps = false;
 }

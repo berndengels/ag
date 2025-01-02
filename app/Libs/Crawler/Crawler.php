@@ -2,9 +2,9 @@
 
 namespace App\Libs\Crawler;
 
-use App\Models\Location;
 use Eloquent;
 use Exception;
+use App\Models\Location;
 use GuzzleHttp\RequestOptions;
 use App\Libs\Crawler\Observer\Observer;
 use App\Repositories\Traits\ResultParser;
@@ -18,6 +18,10 @@ class Crawler implements ICrawler
      * @var string
      */
     protected $baseUrl = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen';
+	/**
+	 * @var Observer
+	 */
+	protected $observer;
     /**
      * @var string
      */
@@ -49,24 +53,41 @@ class Crawler implements ICrawler
             throw new Exception('location object must be set!');
         }
 
-        $this->url = str_replace(['%CITY%','%PLZ%'], [$this->location->name, $this->location->zipcode], $this->url);
+//        $this->url = str_replace(['%CITY%','%PLZ%'], [urlencode($this->location->name), $this->location->zipcode], $this->url);
+		$this->url = str_replace('%PLZ%', $this->location->zipcode, $this->url);
+        $this->observer = new Observer($this->model, $this->location);
+		$this->crawle();
 
-        $options = [
-            RequestOptions::ALLOW_REDIRECTS => true,
-            RequestOptions::TIMEOUT => 30
-        ];
-        $observer = new Observer($this->model, $this->location);
-        SpatieCrawler::create($options)
-            ->executeJavaScript()
-            ->setTotalCrawlLimit(1)
-            ->setDelayBetweenRequests(200)
-            ->setCrawlObserver($observer)
-            ->setCrawlProfile(new CrawlInternalUrls($this->baseUrl))
-            ->startCrawling($this->url);
-
-        $this->entity = $this->model::whereCustomerPostcode($this->location->zipcode)->get()->last();
-        return $this;
+		return $this;
     }
+
+	private function crawle()
+	{
+		$options = [
+			RequestOptions::ALLOW_REDIRECTS => true,
+			RequestOptions::TIMEOUT => 30
+		];
+		SpatieCrawler::create($options)
+			->executeJavaScript()
+			->setTotalCrawlLimit(1)
+			->setDelayBetweenRequests(200)
+			->setCrawlObserver($this->observer)
+			->setCrawlProfile(new CrawlInternalUrls($this->baseUrl))
+			->startCrawling($this->url)
+		;
+
+		$this->entity = $this->model::whereCustomerPostcode($this->location->zipcode)->get()->last();
+	}
+
+	public function setPostcodeUrl()
+	{
+/*
+		[$scheme, $host, $path, $query] = array_values(parse_url($this->url));
+		$query = preg_replace('/&volltext=[^&]+/i', '', $query);
+		$this->url = "{$scheme}://{$host}{$path}?{$query}";
+*/
+		return $this;
+	}
 
     /**
      * @return mixed

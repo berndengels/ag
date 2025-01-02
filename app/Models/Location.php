@@ -47,6 +47,10 @@ class Location extends Model
 
     protected $guarded = ['id'];
     public $timestamps = false;
+	protected $casts = [
+		'found_jc'	=> 'bool',
+		'found_aa'	=> 'bool',
+	];
 
     public function scopeHasNoJobcenter(Builder $builder)
     {

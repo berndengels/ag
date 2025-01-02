@@ -52,4 +52,5 @@ class Arbeitsagentur extends Model
 
     protected $table = 'arbeitsagenturen';
     protected $guarded = ['id'];
+	public $timestamps = false;
 }

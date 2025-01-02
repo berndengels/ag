@@ -2,11 +2,9 @@
 
 namespace App\Libs\Crawler\Observer;
 
-use App\Models\Location;
 use Eloquent;
 use Exception;
-use App\Models\Crawler;
-use App\Libs\Crawler\Symfony;
+use App\Models\Location;
 use Psr\Http\Message\UriInterface;
 use GuzzleHttp\Exception\RequestException;
 use App\Repositories\Traits\ResultParser;
@@ -25,18 +23,23 @@ class Observer extends CrawlObserver
      */
     public $result;
     private $entry;
+	private $log;
+	private $url;
     public function __construct(
         protected string $model,
         protected Location $location
-    ) {}
+    ) {
+		$this->log = Log::channel('crawler');
+	}
 
     /**
      * Called when the crawler will crawl the url.
      *
      * @param UriInterface $url
      */
-    public function willCrawl(UriInterface $url): void
+    public function willCrawl(UriInterface $url, ?string $linkText): void
     {
+		$this->url = $url;
     }
 
     /**
@@ -49,47 +52,38 @@ class Observer extends CrawlObserver
     public function crawled(
         UriInterface $url,
         ResponseInterface $response,
-        ?UriInterface $foundOnUrl = null
-    ): void {
+        ?UriInterface $foundOnUrl = null,
+		?string $linkText = null,
+	):void {
+		$this->url = $url;
         $content = $response->getBody()->getContents();
         $crawler = new DomCrawler($content);
         try {
             // a-no-results
-            if($crawler->filter('body a-no-results')->count() > 0) {
-                Log::info($this->postcode . ': no search results');
-                echo json_encode(['error' => 'no search results for postcode: ' . $this->location->zipcode]);
-            } else {
-                $this->result = $crawler->filter('body .search-results-content');
-                if($this->result->count() > 0) {
-                    $this->result->first()->filter('article')->each(function(DomCrawler $article) {
-                        $data = $this->parse($article);
-                        if($data) {
-                            $data +=  [
-                                'customer_postcode' => $this->location->zipcode,
-                                'customer_location' => $this->location->name,
-                                'response' => $article->outerHtml(),
-                            ];
-                            $this->entry = $this->model::insertOrIgnore($data);
-/*
-                            $condition = [
-                                'customer_postcode' => $this->location->zipcode,
-                                'customer_location' => $this->location->name,
-                                'info'      => $data['info'],
-                                'postcode'  => $data['postcode'],
-                                'city'      => $data['city'],
-                                'street'    => $data['street'],
-                            ];
-                            $this->model::updateOrCreate($condition, $data);
-*/
-                        }
-                    });
+			if($crawler->filter('body a-no-results')->count() > 0) {
+				$this->log->info($this->location->zipcode . ': no search results');
+			} else {
+				$this->result = $crawler->filter('body nav.search-results-content');
+
+				if($this->result->count() > 0) {
+					$results = $this->result->first()->filter('ol li');
+					$results->each(function(DomCrawler $dom) {
+						$data = $this->parse($dom);
+						if($data) {
+							$data += [
+								'customer_postcode' => $this->location->zipcode,
+								'customer_location' => $this->location->name,
+								'response' => $dom->outerHtml(),
+							];
+							$this->entry = $this->model::insertOrIgnore($data);
+						}
+					});
 //                    $file = storage_path('app/public/browsershot/') . $this->postcode.'.jpg';
 //                    $this->screenshot($html, $url, $file);
-                }
-            }
+				}
+			}
         } catch (Exception $e) {
-            Log::info($this->postcode . ': ' . $e->getMessage());
-            echo json_encode(['error' => $e->getMessage()]);
+			$this->log->error($this->location->zipcode . ': ' . $e->getMessage());
         }
     }
 
@@ -103,9 +97,10 @@ class Observer extends CrawlObserver
     public function crawlFailed(
         UriInterface $url,
         RequestException $requestException,
-        ?UriInterface $foundOnUrl = null
+        ?UriInterface $foundOnUrl = null,
+		?string $linkText = null
     ): void {
-        Log::error('crawlFailed: ' . $url . ':' . $requestException->getMessage());
+        $this->log->error('crawlFailed: ' . $url . ':' . $requestException->getMessage());
     }
 
     /**
@@ -113,7 +108,9 @@ class Observer extends CrawlObserver
      */
     public function finishedCrawling(): void
     {
-
+		if(!$this->entry) {
+//			$this->log->info('not found on URL: ' . $this->url);
+		}
     }
 
     protected function screenshot($html, $url, $file)
