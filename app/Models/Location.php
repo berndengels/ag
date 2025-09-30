@@ -39,6 +39,12 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder|Location hasNoArbeitsagentur()
  * @method static Builder|Location whereExtra($value)
  * @method static Builder|Location whereName($value)
+ * @property int|null $community_id
+ * @property bool|null $found_jc
+ * @property bool $found_aa
+ * @method static Builder|Location whereCommunityId($value)
+ * @method static Builder|Location whereFoundAa($value)
+ * @method static Builder|Location whereFoundJc($value)
  * @mixin Eloquent
  */
 class Location extends Model

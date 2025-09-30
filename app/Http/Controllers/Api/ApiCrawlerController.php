@@ -46,7 +46,7 @@ abstract class ApiCrawlerController extends Controller
         return response()->json(['count' => $count]);
     }
 
-    public function crawle($postcode, $city = null)
+    public function crawle($postcode)
     {
 		$query = $this->locationModel::select()
 			->whereZipcode($postcode);

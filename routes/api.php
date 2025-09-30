@@ -13,7 +13,7 @@ Route::group([
 ], function () {
     Route::get('locations', [ApiJobcenterCrawlerController::class, 'locations']);
     Route::get('count', [ApiJobcenterCrawlerController::class, 'count']);
-    Route::get('crawle/{postcode}/{city?}', [ApiJobcenterCrawlerController::class, 'crawle']);
+    Route::get('crawle/{postcode}', [ApiJobcenterCrawlerController::class, 'crawle']);
     Route::patch('found/{location}', [ApiJobcenterCrawlerController::class, 'setFounded']);
 });
 Route::group([
@@ -21,7 +21,6 @@ Route::group([
 ], function () {
     Route::get('locations', [ApiArbeitsagenturCrawlerController::class, 'locations']);
     Route::get('count', [ApiArbeitsagenturCrawlerController::class, 'count']);
-//    Route::get('crawle/{postcode}/{city?}', [ApiArbeitsagenturCrawlerController::class, 'crawle']);
 	Route::get('crawle/{postcode}', [ApiArbeitsagenturCrawlerController::class, 'crawle']);
     Route::patch('found/{location}', [ApiArbeitsagenturCrawlerController::class, 'setFounded']);
 });

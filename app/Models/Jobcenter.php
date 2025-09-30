@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Jobcenter whereUrl($value)
  * @property string $customer_location
  * @method static Builder|Jobcenter whereCustomerLocation($value)
+ * @mixin Eloquent
  * @mixin Eloquent
  */
 class Jobcenter extends Model

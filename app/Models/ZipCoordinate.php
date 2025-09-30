@@ -31,6 +31,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Arbeitsagentur|null $arbeitsagentur
  * @method static Builder|ZipCoordinate hasArbeitsagentur()
  * @method static Builder|ZipCoordinate hasNoArbeitsagentur()
+ * @property int|null $community_id
+ * @property string|null $extra
+ * @property string $state
+ * @property string|null $community
+ * @property string|null $community_code
+ * @property string|null $latitude
+ * @property string|null $longitude
+ * @property int|null $found_jc
+ * @property int $found_aa
+ * @method static Builder|ZipCoordinate whereCommunity($value)
+ * @method static Builder|ZipCoordinate whereCommunityCode($value)
+ * @method static Builder|ZipCoordinate whereCommunityId($value)
+ * @method static Builder|ZipCoordinate whereExtra($value)
+ * @method static Builder|ZipCoordinate whereFoundAa($value)
+ * @method static Builder|ZipCoordinate whereFoundJc($value)
+ * @method static Builder|ZipCoordinate whereLatitude($value)
+ * @method static Builder|ZipCoordinate whereLongitude($value)
+ * @method static Builder|ZipCoordinate whereState($value)
  * @mixin Eloquent
  */
 class ZipCoordinate extends Model

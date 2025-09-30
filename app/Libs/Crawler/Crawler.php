@@ -18,6 +18,9 @@ class Crawler implements ICrawler
      * @var string
      */
     protected $baseUrl = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen';
+
+	private $usleep = 1000;
+	private $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:143.0) Gecko/20100101 Firefox/143.0';
 	/**
 	 * @var Observer
 	 */
@@ -63,30 +66,28 @@ class Crawler implements ICrawler
 
 	private function crawle()
 	{
+		usleep($this->usleep);
+
 		$options = [
 			RequestOptions::ALLOW_REDIRECTS => true,
 			RequestOptions::TIMEOUT => 30
 		];
-		SpatieCrawler::create($options)
+		$crawl = SpatieCrawler::create($options)
+			->setDefaultScheme('https')
 			->executeJavaScript()
+			->setParseableMimeTypes(['text/html', 'text/plain'])
 			->setTotalCrawlLimit(1)
+			->setConcurrency(1)
+			->setMaximumDepth(1)
 			->setDelayBetweenRequests(200)
 			->setCrawlObserver($this->observer)
 			->setCrawlProfile(new CrawlInternalUrls($this->baseUrl))
-			->startCrawling($this->url)
-		;
+			->setUserAgent($this->userAgent);
+//			->startCrawling($this->url)
+
+		$crawl->startCrawling($this->url);
 
 		$this->entity = $this->model::whereCustomerPostcode($this->location->zipcode)->get()->last();
-	}
-
-	public function setPostcodeUrl()
-	{
-/*
-		[$scheme, $host, $path, $query] = array_values(parse_url($this->url));
-		$query = preg_replace('/&volltext=[^&]+/i', '', $query);
-		$this->url = "{$scheme}://{$host}{$path}?{$query}";
-*/
-		return $this;
 	}
 
     /**

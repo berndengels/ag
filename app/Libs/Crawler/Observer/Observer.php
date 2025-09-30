@@ -2,6 +2,7 @@
 
 namespace App\Libs\Crawler\Observer;
 
+use App\Models\CrawlerLog;
 use Eloquent;
 use Exception;
 use App\Models\Location;
@@ -25,6 +26,7 @@ class Observer extends CrawlObserver
     private $entry;
 	private $log;
 	private $url;
+
     public function __construct(
         protected string $model,
         protected Location $location
@@ -57,6 +59,10 @@ class Observer extends CrawlObserver
 	):void {
 		$this->url = $url;
         $content = $response->getBody()->getContents();
+		CrawlerLog::create([
+			'url'	=> $this->url,
+			'content'	=> $content,
+		]);
         $crawler = new DomCrawler($content);
         try {
             // a-no-results
@@ -78,8 +84,8 @@ class Observer extends CrawlObserver
 							$this->entry = $this->model::insertOrIgnore($data);
 						}
 					});
-//                    $file = storage_path('app/public/browsershot/') . $this->postcode.'.jpg';
-//                    $this->screenshot($html, $url, $file);
+                    $file = storage_path('app/public/browsershots/') . $this->postcode.'.jpg';
+                    $this->screenshot($content, $url, $file);
 				}
 			}
         } catch (Exception $e) {
@@ -132,7 +138,7 @@ class Observer extends CrawlObserver
         ;
     }
 
-    /**
+   /**
      * @return mixed
      */
     public function getEntry()
