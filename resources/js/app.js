@@ -1,5 +1,5 @@
 import './bootstrap';
-import {createApp} from "vue"
+import { createApp } from "vue"
 import CrawlerView from "v@/views/CrawlerView.vue";
 
 $(document).ready(() => {

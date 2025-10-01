@@ -27,5 +27,4 @@ class CrawlerLog extends Model
 
 	protected $table = 'crawler_logs';
     protected $guarded = ['id'];
-    public $timestamps = false;
 }

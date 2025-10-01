@@ -26,6 +26,7 @@ class Observer extends CrawlObserver
     private $entry;
 	private $log;
 	private $url;
+	private $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:143.0) Gecko/20100101 Firefox/143.0';
 
     public function __construct(
         protected string $model,
@@ -127,7 +128,7 @@ class Observer extends CrawlObserver
             ->setExtraHttpHeaders(['Charset' => 'utf-8'])
             ->waitUntilNetworkIdle()
             ->setScreenshotType('jpeg', 70)
-            ->userAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1')
+            ->userAgent($this->userAgent)
             ->windowSize(812, 375)
             ->deviceScaleFactor(3)
             ->mobile()

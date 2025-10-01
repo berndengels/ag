@@ -22,7 +22,7 @@ export default {
             modus: null,
         }
     },
-    components: {Crawler},
+    components: { Crawler },
 }
 </script>
 

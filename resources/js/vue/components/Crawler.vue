@@ -35,7 +35,7 @@ import axios from "axios";
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { PieChart } from "echarts/charts"
-import {DataZoomInsideComponent, DataZoomSliderComponent} from "echarts/components"
+import { DataZoomInsideComponent, DataZoomSliderComponent } from "echarts/components"
 import {
 	TooltipComponent,
 	LegendComponent,
