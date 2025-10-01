@@ -1,4 +1,4 @@
-.#!/bin/bash
+#!/bin/bash
 if [ "$1" == "sail" ]; then
 	php="sail php"
 	sail redis-cli FLUSHALL
