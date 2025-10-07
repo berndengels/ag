@@ -45,6 +45,8 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder|Location whereCommunityId($value)
  * @method static Builder|Location whereFoundAa($value)
  * @method static Builder|Location whereFoundJc($value)
+ * @property string|null $link
+ * @method static Builder|Location whereLink($value)
  * @mixin Eloquent
  */
 class Location extends Model

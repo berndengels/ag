@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
+use App\Models\Zipcode;
 use Illuminate\Http\Request;
 use App\Models\Arbeitsagentur;
-use App\Models\ZipCoordinate;
 use App\Http\Requests\StoreArbeitsamtRequest;
 use App\Http\Requests\UpdateArbeitsagenturRequest;
 use Laravel\Dusk\Chrome\SupportsChrome;
@@ -21,7 +21,7 @@ class ArbeitsagenturController extends Controller
 
     public function __construct()
     {
-        $this->locations = Location::all(['zipcode','name'])
+        $this->locations = Zipcode::all(['zipcode','name'])
             ->keyBy('zipcode')
             ->map(fn($item) => $item->zipcode . ' ' .$item->name);
     }

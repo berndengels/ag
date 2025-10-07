@@ -2,10 +2,13 @@
 
 namespace App\Libs\Crawler;
 
+use App\Libs\Crawler\Observer\LinkObserver;
 use Eloquent;
 use Exception;
 use App\Models\Location;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Browsershot\Browsershot;
 use App\Libs\Crawler\Observer\Observer;
 use App\Repositories\Traits\ResultParser;
 use Spatie\Crawler\Crawler as SpatieCrawler;
@@ -38,6 +41,10 @@ class Crawler implements ICrawler
      */
     protected $entity;
     protected $image;
+	/**
+	 * @var Browsershot
+	 */
+	protected $browsershot;
 
     /**
      * @param Location $location
@@ -58,7 +65,8 @@ class Crawler implements ICrawler
 
 //        $this->url = str_replace(['%CITY%','%PLZ%'], [urlencode($this->location->name), $this->location->zipcode], $this->url);
 		$this->url = str_replace('%PLZ%', $this->location->zipcode, $this->url);
-        $this->observer = new Observer($this->model, $this->location);
+//        $this->observer = new Observer($this->model, $this->location);
+		$this->observer = new LinkObserver($this->model, $this->location);
 		$this->crawle();
 
 		return $this;
@@ -72,22 +80,38 @@ class Crawler implements ICrawler
 			RequestOptions::ALLOW_REDIRECTS => true,
 			RequestOptions::TIMEOUT => 30
 		];
-		$crawl = SpatieCrawler::create($options)
+/*
+		$image = Storage::disk('browsershots')->path($this->location->zipcode . '.jpg');
+
+		$this->browsershot = Browsershot::url($this->url)
+			->newHeadless()
+			->dismissDialogs()
+			->setScreenshotType('jpeg', 70)
+			->waitForSelector('.dienststellen-result a')
+			->click('.dienststellen-result a')
+			->select('.form-check #arbeitsagenturen')
+		;
+		$html = $this->browsershot->bodyHtml();
+		Storage::disk('browsershots')
+			->put($this->location->zipcode. '.html', $html)
+		;
+//		$this->browsershot->save($image);
+*/
+		SpatieCrawler::create($options)
 			->setDefaultScheme('https')
-			->executeJavaScript()
-			->setParseableMimeTypes(['text/html', 'text/plain'])
-			->setTotalCrawlLimit(1)
-			->setConcurrency(1)
-			->setMaximumDepth(1)
-			->setDelayBetweenRequests(200)
 			->setCrawlObserver($this->observer)
 			->setCrawlProfile(new CrawlInternalUrls($this->baseUrl))
-			->setUserAgent($this->userAgent);
-//			->startCrawling($this->url)
-
-		$crawl->startCrawling($this->url);
+			->setUserAgent($this->userAgent)
+			->setConcurrency(1)
+			->setTotalCrawlLimit(1)
+			->setMaximumDepth(0)
+			->setDelayBetweenRequests(200)
+			->executeJavaScript()
+			->startCrawling($this->url)
+		;
 
 		$this->entity = $this->model::whereCustomerPostcode($this->location->zipcode)->get()->last();
+//		$this->image = $this->browsershot->screenshot();
 	}
 
     /**

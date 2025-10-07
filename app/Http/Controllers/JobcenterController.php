@@ -6,7 +6,6 @@ use App\Http\Requests\StoreJobcenterRequest;
 use App\Http\Requests\UpdateJobcenterRequest;
 use App\Models\Jobcenter;
 use App\Models\Location;
-use App\Models\ZipCoordinate;
 use App\Repositories\JobcenterRepository;
 use App\Repositories\LocationRepository;
 use Laravel\Dusk\Chrome\SupportsChrome;

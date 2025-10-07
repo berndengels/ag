@@ -60,35 +60,30 @@ class Observer extends CrawlObserver
 	):void {
 		$this->url = $url;
         $content = $response->getBody()->getContents();
-		CrawlerLog::create([
-			'url'	=> $this->url,
-			'content'	=> $content,
-		]);
         $crawler = new DomCrawler($content);
         try {
-            // a-no-results
-			if($crawler->filter('body a-no-results')->count() > 0) {
-				$this->log->info($this->location->zipcode . ': no search results');
-			} else {
-				$this->result = $crawler->filter('body nav.search-results-content');
-
-				if($this->result->count() > 0) {
-					$results = $this->result->first()->filter('ol li');
-					$results->each(function(DomCrawler $dom) {
-						$data = $this->parse($dom);
-						if($data) {
-							$data += [
-								'customer_postcode' => $this->location->zipcode,
-								'customer_location' => $this->location->name,
-								'response' => $dom->outerHtml(),
-							];
-							$this->entry = $this->model::insertOrIgnore($data);
-						}
-					});
-                    $file = storage_path('app/public/browsershots/') . $this->postcode.'.jpg';
-                    $this->screenshot($content, $url, $file);
-				}
+			$link = $crawler->filter('.dienststellen-result a')->first()->attr('href');
+			CrawlerLog::create([
+				'url'	=> $this->url,
+				'link'	=> $link,
+				'content'	=> $content,
+			]);
+			$this->log->error('link: ' . $link);
+/*
+			if($this->result->count() > 0) {
+				$results->each(function(DomCrawler $dom) {
+					$data = $this->parse($dom);
+					if($data) {
+						$data += [
+							'customer_postcode' => $this->location->zipcode,
+							'customer_location' => $this->location->name,
+							'response' => $dom->outerHtml(),
+						];
+						$this->entry = $this->model::insertOrIgnore($data);
+					}
+				});
 			}
+*/
         } catch (Exception $e) {
 			$this->log->error($this->location->zipcode . ': ' . $e->getMessage());
         }
@@ -118,25 +113,6 @@ class Observer extends CrawlObserver
 		if(!$this->entry) {
 //			$this->log->info('not found on URL: ' . $this->url);
 		}
-    }
-
-    protected function screenshot($html, $url, $file)
-    {
-        $html = mb_convert_encoding($html, 'UTF-8');
-        return Browsershot::html($html)
-            ->setContentUrl($url)
-            ->setExtraHttpHeaders(['Charset' => 'utf-8'])
-            ->waitUntilNetworkIdle()
-            ->setScreenshotType('jpeg', 70)
-            ->userAgent($this->userAgent)
-            ->windowSize(812, 375)
-            ->deviceScaleFactor(3)
-            ->mobile()
-            ->touch()
-            ->landscape()
-            ->save($file)
-//            ->screenshot()
-        ;
     }
 
    /**

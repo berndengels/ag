@@ -3,7 +3,6 @@
 namespace App\Libs\Crawler;
 
 use App\Models\Arbeitsagentur;
-use App\Models\ZipCoordinate;
 
 class ArbeitsagenturCrawler extends Crawler
 {

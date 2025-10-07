@@ -42,7 +42,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $customer_location
  * @method static Builder|Jobcenter whereCustomerLocation($value)
  * @mixin Eloquent
- * @mixin Eloquent
  */
 class Jobcenter extends Model
 {

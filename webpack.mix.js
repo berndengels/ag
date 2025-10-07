@@ -4,7 +4,7 @@ mix.disableNotifications();
 mix.autoload({
         'jquery': ['jQuery', '$'],
     })
-    .webpackConfig(require('./webpack.config'))
+    .webpackConfig(require('./webpack.config.js'))
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')

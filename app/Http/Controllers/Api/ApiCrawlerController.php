@@ -62,6 +62,7 @@ abstract class ApiCrawlerController extends Controller
 				'error' => 'no location found',
 				'entity' => null,
 				'url'   => null,
+				'image'	=> null,
 			];
 
 			return response()->json($response);
@@ -76,15 +77,16 @@ abstract class ApiCrawlerController extends Controller
             ->run()
         ;
 
-//        $imageURL   = '/storage/browsershot/'.$postcode.'.jpg';
-//        $imagePath  = public_path('storage/browsershot/') . $postcode.'.jpg';
+        $imageURL   = '/storage/browsershots/'.$postcode.'.jpg';
+        $imagePath  = public_path('storage/browsershots/') . $postcode.'.jpg';
 
         $response = [
             'error' => $run->getEntity() ? false : true,
             'entity' => $run->getEntity(),
             'url'   => $run->getUrl(),
-//            'image' => file_exists($imagePath) ? $imageURL : null,
+            'image' => file_exists($imagePath) ? $imageURL : null,
         ];
+
         return response()->json($response);
     }
 

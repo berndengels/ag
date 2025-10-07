@@ -1,8 +1,8 @@
 import './bootstrap';
 import { createApp } from "vue"
-import CrawlerView from "v@/views/CrawlerView.vue";
+import ScraperView from "v@/views/ScraperView.vue";
 
 $(document).ready(() => {
 	const app= document.getElementById('app');
-	createApp(CrawlerView).mount(app);
+	createApp(ScraperView).mount(app);
 });

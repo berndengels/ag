@@ -44,6 +44,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Arbeitsagentur whereUrl($value)
  * @property string $customer_location
  * @method static Builder|Arbeitsagentur whereCustomerLocation($value)
+ * @property string|null $post_address
+ * @method static Builder|Arbeitsagentur wherePostAddress($value)
  * @mixin Eloquent
  */
 class Arbeitsagentur extends Model
