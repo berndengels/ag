@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Arbeitsagentur;
+use App\Models\EmploymentAgency;
 use App\Repositories\Traits\ResultParser;
 
 class ArbeitsamtRepository
@@ -12,7 +12,7 @@ class ArbeitsamtRepository
     public static function repairByHtml($nullField = 'fon')
     {
         $affected = 0;
-        Arbeitsagentur::whereNull($nullField)->get()->each(function (Arbeitsagentur $item) use (&$affected) {
+        EmploymentAgency::whereNull($nullField)->get()->each(function (EmploymentAgency $item) use (&$affected) {
             if($item->response) {
                 $data = $this->parse($item->response);
                 if(!isset($data['error']) && $item->update($data)) {

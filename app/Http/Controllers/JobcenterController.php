@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobcenterRequest;
 use App\Http\Requests\UpdateJobcenterRequest;
-use App\Models\Jobcenter;
+use App\Models\JobCentre;
 use App\Models\Location;
 use App\Repositories\JobcenterRepository;
 use App\Repositories\LocationRepository;
@@ -33,7 +33,7 @@ class JobcenterController extends Controller
      */
     public function index()
     {
-        $data = Jobcenter::paginate($this->paginatorLimit);
+        $data = JobCentre::paginate($this->paginatorLimit);
         return view('pages.jobcenters.index', [
             'data' => $data,
         ]);
@@ -42,9 +42,9 @@ class JobcenterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Jobcenter $jobcenter)
+    public function show(JobCentre $jobcenter)
     {
-        $html = Jobcenter::whereFon(null)->first()->response;
+        $html = JobCentre::whereFon(null)->first()->response;
         $crawler = new DomCrawler($html);
         $data = $crawler->filter('article')->each(fn(DomCrawler $item) => $item->children());
         return view('pages.jobcenters.show', [
@@ -68,7 +68,7 @@ class JobcenterController extends Controller
     {
         $postcode = $request->post('postcode') ?? null;
         if($postcode) {
-            $jobcenter = Jobcenter::whereCustomerPostcode($postcode)->first();
+            $jobcenter = JobCentre::whereCustomerPostcode($postcode)->first();
         }
         return view('pages.jobcenters.search', [
             'jobcenter' => $jobcenter,
@@ -96,7 +96,7 @@ class JobcenterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Jobcenter $jobcenter)
+    public function edit(JobCentre $jobcenter)
     {
         //
     }
@@ -104,7 +104,7 @@ class JobcenterController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateJobcenterRequest $request, Jobcenter $jobcenter)
+    public function update(UpdateJobcenterRequest $request, JobCentre $jobcenter)
     {
         //
     }
@@ -112,7 +112,7 @@ class JobcenterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Jobcenter $jobcenter)
+    public function destroy(JobCentre $jobcenter)
     {
         //
     }

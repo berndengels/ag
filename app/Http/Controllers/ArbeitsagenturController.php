@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Location;
 use App\Models\Zipcode;
 use Illuminate\Http\Request;
-use App\Models\Arbeitsagentur;
+use App\Models\EmploymentAgency;
 use App\Http\Requests\StoreArbeitsamtRequest;
 use App\Http\Requests\UpdateArbeitsagenturRequest;
 use Laravel\Dusk\Chrome\SupportsChrome;
@@ -31,7 +31,7 @@ class ArbeitsagenturController extends Controller
      */
     public function index()
     {
-        $data = Arbeitsagentur::paginate($this->paginatorLimit);
+        $data = EmploymentAgency::paginate($this->paginatorLimit);
         return view('pages.arbeitsagenturen.index', [
             'data' => $data,
         ]);
@@ -42,7 +42,7 @@ class ArbeitsagenturController extends Controller
      */
     public function repair()
     {
-        $data = Arbeitsagentur::whereUrl(null)->get()->each(function (Arbeitsagentur $item) {
+        $data = EmploymentAgency::whereUrl(null)->get()->each(function (EmploymentAgency $item) {
             $url = (new DomCrawler($item->response))->filter('article h3 a')->attr('href');
             dd($url);
         });
@@ -53,9 +53,9 @@ class ArbeitsagenturController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Arbeitsagentur $arbeitsagentur)
+    public function show(EmploymentAgency $arbeitsagentur)
     {
-        $html = Arbeitsagentur::whereFon(null)->first()->response;
+        $html = EmploymentAgency::whereFon(null)->first()->response;
         $crawler = new DomCrawler($html);
         $data = $crawler->filter('article')->each(fn(DomCrawler $item) => $item->children());
         return view('pages.arbeitsagenturen.show', [
@@ -79,7 +79,7 @@ class ArbeitsagenturController extends Controller
     {
         $postcode = $request->post('postcode') ?? null;
         if($postcode) {
-            $arbeitsagentur = Arbeitsagentur::whereCustomerPostcode($postcode)->first();
+            $arbeitsagentur = EmploymentAgency::whereCustomerPostcode($postcode)->first();
         }
         return view('pages.arbeitsagenturen.search', [
             'arbeitsagentur' => $arbeitsagentur,
@@ -107,7 +107,7 @@ class ArbeitsagenturController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Arbeitsagentur $arbeitsagentur)
+    public function edit(EmploymentAgency $arbeitsagentur)
     {
         //
     }
@@ -115,7 +115,7 @@ class ArbeitsagenturController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateArbeitsagenturRequest $request, Arbeitsagentur $arbeitsagentur)
+    public function update(UpdateArbeitsagenturRequest $request, EmploymentAgency $arbeitsagentur)
     {
         //
     }
@@ -123,7 +123,7 @@ class ArbeitsagenturController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Arbeitsagentur $arbeitsagentur)
+    public function destroy(EmploymentAgency $arbeitsagentur)
     {
         //
     }

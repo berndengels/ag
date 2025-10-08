@@ -29,12 +29,12 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder|Location wherePlace($value)
  * @method static Builder|Location whereState($value)
  * @method static Builder|Location whereZipcode($value)
- * @property-read Jobcenter|null $jobcenter
+ * @property-read JobCentre|null $jobcenter
  * @method static Builder|Location hasJobcenter()
  * @method static Builder|Location hasNoJobcenter()
  * @property string $name
  * @property string|null $extra
- * @property-read Arbeitsagentur|null $arbeitsagentur
+ * @property-read EmploymentAgency|null $arbeitsagentur
  * @method static Builder|Location hasArbeitsagentur()
  * @method static Builder|Location hasNoArbeitsagentur()
  * @method static Builder|Location whereExtra($value)
@@ -82,12 +82,12 @@ class Location extends Model
 
     public function jobcenter()
     {
-        return $this->hasOne(Jobcenter::class, 'customer_postcode', 'zipcode');
+        return $this->hasOne(JobCentre::class, 'customer_postcode', 'zipcode');
     }
 
     public function arbeitsagentur()
     {
-        return $this->hasOne(Arbeitsagentur::class, 'customer_postcode', 'zipcode');
+        return $this->hasOne(EmploymentAgency::class, 'customer_postcode', 'zipcode');
     }
 
 	public function community()

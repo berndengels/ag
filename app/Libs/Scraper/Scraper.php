@@ -47,22 +47,27 @@ class Scraper
 		if(!$this->location) {
 			throw new Exception('location object must be set!');
 		}
-
-//        $this->url = str_replace(['%CITY%','%PLZ%'], [urlencode($this->location->name), $this->location->zipcode], $this->url);
-		$this->url = str_replace('%PLZ%', $this->location->zipcode, $this->url);
-		$browsershot = Browsershot::url($this->url)
-			->newHeadless()
-			->dismissDialogs()
-			->waitForSelector('.dienststellen-result a')
-		;
-
-		usleep($this->usleep);
-
-		$content = $browsershot->bodyHtml();
-		$crawler = new DomCrawler($content);
-
 		try {
-			$result = $crawler->filter('.dienststellen-result a')->first();
+//        $this->url = str_replace(['%CITY%','%PLZ%'], [urlencode($this->location->name), $this->location->zipcode], $this->url);
+			$this->url = trim(str_replace('%PLZ%', $this->location->zipcode, $this->url));
+			$browsershot = Browsershot::url($this->url)
+				->newHeadless()
+				->dismissDialogs()
+				->waitForSelector('.dienststellen-result a');
+
+			usleep($this->usleep);
+
+			$content = $browsershot->bodyHtml();
+			$crawler = new DomCrawler($content);
+
+			$filter = $crawler->filter('.dienststellen-result a');
+
+			if(!$filter->matches('.dienststellen-result')) {
+//				return $this;
+			}
+
+			$result = $filter->first();
+
 			$name = $result->filter('h2.title')->first()->text();
 			$address = $result->filter('p.visitor-address span');
 			$street = $address->eq(0)->text();
@@ -77,6 +82,7 @@ class Scraper
 					->disableRedirects()
 					->disableJavascript()
 					->disableCaptureURLS()
+					->waitUntilNetworkIdle()
 					->waitForSelector('section.ba-contact-infobox')
 				;
 
@@ -87,7 +93,7 @@ class Scraper
 				$contact = $contectBoxes->eq(1);
 				$fon = $contact->filter('a')->each(fn(DomCrawler $item) => $item->attr('href'));
 				array_pop($fon);
-				array_walk($fon, fn(&$a) => preg_replace("/^tel\:/i",'', $a));
+				array_walk($fon, fn(&$a) => preg_replace("/^tel:/i",'', trim($a)));
 //				$openingTimes = str_replace('<br>',', ', $contact->filter('p')->eq(1)->html());
 				$postAddress = strip_tags(str_replace('<br>',"\n", $contectBoxes->eq(2)->filter('address')->html()));
 
@@ -101,15 +107,21 @@ class Scraper
 					'post_address'	=> $postAddress,
 //					'openingTimes' => $openingTimes,
 				];
+/*
 				$disk = Storage::disk('browsershots');
 				$file = $this->location->zipcode . '.png';
 				$imagePath = $disk->path($file);
+
+				if($disk->exists($file)) {
+					$disk->delete($file);
+				}
+
 				$browsershot
-					->windowSize(640, 480)
 					->landscape()
 					->save($imagePath);
 
 				$this->image = $disk->url($file);
+*/
 			}
 		} catch (Exception $e) {
 			$this->log->error($this->location->zipcode . ': ' . $e->getMessage());
@@ -120,7 +132,7 @@ class Scraper
 
 	public function getUrl(): string
 	{
-		return $this->url;
+		return trim($this->url);
 	}
 
 	public function getEntity()

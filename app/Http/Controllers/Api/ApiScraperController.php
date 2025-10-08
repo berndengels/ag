@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\CustomerAgency;
+use App\Models\EmploymentAgency;
+use App\Models\JobCentre;
 use App\Models\Location;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LocationResource;
@@ -11,6 +14,9 @@ use App\Models\Zipcode;
 abstract class ApiScraperController extends Controller
 {
     protected $baseUrl = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen';
+	/**
+	 * @var EmploymentAgency|JobCentre
+	 */
     protected $model;
     protected $url;
     /**
@@ -77,7 +83,27 @@ abstract class ApiScraperController extends Controller
 		$entity = $run->getEntity();
 
 		if($entity) {
-			app($this->model)->insertOrIgnore($entity);
+
+			$id = $this->model::insertOrIgnore($entity);
+
+			if($id && $id > 0) {
+				$model = $this->model::find($id);
+
+			} else {
+				$model = $this->model::select()
+					->whereName($entity['name'])
+					->wherePostcode($entity['postcode'])
+					->whereCity($entity['city'])
+					->whereStreet($entity['street'])
+					->first()
+				;
+			}
+
+			CustomerAgency::insertOrIgnore([
+				'agency_type'	=> $this->model,
+				'agency_id'	=> $model->id,
+				'postcode'	=> $postcode,
+			]);
 		}
 
         $response = [

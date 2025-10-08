@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Jobcenter;
+use App\Models\JobCentre;
 use App\Repositories\Traits\ResultParser;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +13,7 @@ class JobcenterRepository
     public static function repairByHtml($nullField = 'fon')
     {
         $affected = 0;
-        Jobcenter::whereNull($nullField)->get()->each(function (Jobcenter $item) use (&$affected) {
+        JobCentre::whereNull($nullField)->get()->each(function (JobCentre $item) use (&$affected) {
             if($item->response) {
                 $data = $this->parse($item->response);
                 if(!isset($data['error']) && $item->update($data)) {
@@ -31,7 +31,7 @@ class JobcenterRepository
 
     public static function sanitizeHtmlEntiies()
     {
-        $jobcenter  = new Jobcenter();
+        $jobcenter  = new JobCentre();
         $table      = $jobcenter->getTable();
         /**
          * @var Collection $columns
@@ -42,7 +42,7 @@ class JobcenterRepository
             ->values()
         ;
 
-        $data = Jobcenter::all()->each(function (Jobcenter $item) use  ($columns) {
+        $data = JobCentre::all()->each(function (JobCentre $item) use  ($columns) {
             $data = $columns
                 ->keyBy(fn($k) => $k)
                 ->map(function($d) use ($item) {

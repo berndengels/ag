@@ -225,6 +225,7 @@ export default {
             }, delay)
         },
         stop(){
+			this.running = false
             clearInterval(this.intVal);
         },
         fetch() {
@@ -236,7 +237,6 @@ export default {
 		fetchByPostcode(plz) {
 			axios.get(url + this.modus + "/scrape/" + plz)
 				.then(resp => {
-					console.info('data', resp.data);
 					if (resp.data.error) {
 						this.entity = null;
 						this.url = null;
@@ -254,7 +254,6 @@ export default {
 				})
 				.catch(err => console.info('Error', err));
 
-			console.info(plz);
 			this.remaining--;
 			this.counter++;
 			this.done++;

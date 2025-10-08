@@ -2,10 +2,10 @@
 
 namespace App\Libs\Crawler;
 
-use App\Models\Arbeitsagentur;
+use App\Models\EmploymentAgency;
 
 class ArbeitsagenturCrawler extends Crawler
 {
-    protected $model = Arbeitsagentur::class;
+    protected $model = EmploymentAgency::class;
     protected $url = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen?in=arbeitsagenturen&plz=%PLZ%';
 }
