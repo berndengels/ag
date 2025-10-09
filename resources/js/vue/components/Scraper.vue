@@ -4,7 +4,7 @@
 			<div class="col">
 				<div class="card">
 					<div class="card-header">
-						<span v-if="currentLocation">{{ currentLocation.plz }} {{ currentLocation.name }}</span>
+						<span v-if="currentLocation">PLZ: {{ currentLocation.plz }}</span>
 						<span v-else>Suche kann gestartet werden</span>
 						<span class="ms-5 float-end text-success" v-if="entity" v-html="entity.name"></span>
 					</div>

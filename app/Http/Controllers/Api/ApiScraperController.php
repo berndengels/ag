@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\CustomerAgency;
 use App\Models\EmploymentAgency;
 use App\Models\JobCentre;
-use App\Models\Location;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\LocationResource;
+use App\Http\Resources\ZipcodeResource;
 use App\Libs\Scraper\Scraper;
 use App\Models\Zipcode;
+use App\Models\ZipcodeUnique;
 
 abstract class ApiScraperController extends Controller
 {
@@ -23,7 +23,7 @@ abstract class ApiScraperController extends Controller
      * @var Scraper
      */
     protected $scraper;
-    protected $locationModel = Zipcode::class;
+    protected $locationModel = ZipcodeUnique::class;
     protected $foundField;
 
     /**
@@ -31,15 +31,14 @@ abstract class ApiScraperController extends Controller
      */
     public function locations()
     {
-		$this->locationModel::where($this->foundField, '=', 1)->get()->each(fn(Zipcode $z) => Zipcode::whereZipcode($z->zipcode)->update([$this->foundField => 1]));
 
-        $locations = $this->locationModel::select(['id','zipcode','name'])
+        $locations = $this->locationModel::select(['id','zipcode'])
 			->where($this->foundField, '=', 0)
-            ->groupBy('zipcode')
-            ->get(['id','zipcode','name'])
+//            ->groupBy('zipcode')
+            ->get()
         ;
 
-		$locations = LocationResource::collection($locations);
+		$locations = ZipcodeResource::collection($locations);
 
         return response()->json(['locations' => $locations]);
     }
@@ -50,7 +49,7 @@ abstract class ApiScraperController extends Controller
     public function count()
     {
         $count = $this->locationModel::where($this->foundField, '=', 1)
-			->groupBy('zipcode')
+//			->groupBy('zipcode')
             ->count()
         ;
 
@@ -124,7 +123,7 @@ abstract class ApiScraperController extends Controller
     public function setFounded(Zipcode $zipcode)
     {
 		$this->locationModel::whereZipcode($zipcode->zipcode)->update([$this->foundField => 1]);
-		$zipcode = new LocationResource($zipcode);
+		$zipcode = new ZipcodeResource($zipcode);
 
         return response()->json($zipcode);
     }
