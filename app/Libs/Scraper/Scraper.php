@@ -33,7 +33,7 @@ class Scraper
 	 * @param ZipcodeUnique $location
 	 */
 	public function __construct(
-		protected ZipcodeUnique|null $location = null
+		protected ZipcodeUnique $location
 	) {}
 	/**
 	 * @param ZipcodeUnique $location
@@ -94,7 +94,8 @@ class Scraper
 				$contact = $contectBoxes->eq(1);
 				$fon = $contact->filter('a')->each(fn(DomCrawler $item) => $item->attr('href'));
 				array_pop($fon);
-				array_walk($fon, fn(&$a) => preg_replace("/^tel:/i",'', trim($a)));
+				array_walk($fon, fn($a) => preg_replace("/^tel\:/i",'', trim($a)));
+
 //				$openingTimes = str_replace('<br>',', ', $contact->filter('p')->eq(1)->html());
 				$postAddress = strip_tags(str_replace('<br>',"\n", $contectBoxes->eq(2)->filter('address')->html()));
 

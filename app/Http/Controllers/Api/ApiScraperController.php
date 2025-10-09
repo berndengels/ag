@@ -31,13 +31,7 @@ abstract class ApiScraperController extends Controller
      */
     public function locations()
     {
-
-        $locations = $this->locationModel::select(['id','zipcode'])
-			->where($this->foundField, '=', 0)
-//            ->groupBy('zipcode')
-            ->get()
-        ;
-
+        $locations = $this->locationModel::select(['id','zipcode'])->where($this->foundField, '=', 0)->get();
 		$locations = ZipcodeResource::collection($locations);
 
         return response()->json(['locations' => $locations]);
@@ -48,17 +42,14 @@ abstract class ApiScraperController extends Controller
      */
     public function count()
     {
-        $count = $this->locationModel::where($this->foundField, '=', 1)
-//			->groupBy('zipcode')
-            ->count()
-        ;
+        $count = $this->locationModel::where($this->foundField, '=', 1)->count();
 
         return response()->json(['count' => $count]);
     }
 
     public function scrape($postcode)
     {
-		$location = $this->locationModel::select()
+		$location = $this->locationModel::select('zipcode')
 			->whereZipcode($postcode)
 			->first()
 		;
@@ -77,11 +68,8 @@ abstract class ApiScraperController extends Controller
         /**
          * @var Scraper $scraper
          */
-        $scraper = new $this->scraper();
-        $run = $scraper
-            ->setLocation($location)
-            ->run()
-        ;
+        $scraper = new $this->scraper($location);
+        $run = $scraper->run();
 
 		$entity = $run->getEntity();
 
@@ -122,7 +110,7 @@ abstract class ApiScraperController extends Controller
 
     public function setFounded(ZipcodeUnique $zipcodeUnique)
     {
-		$this->locationModel::whereZipcode($zipcodeUnique->zipcode)->update([$this->foundField => 1]);
+		$zipcodeUnique->update([$this->foundField => 1]);
 		$zipcodeUnique = new ZipcodeResource($zipcodeUnique);
 
         return response()->json($zipcodeUnique);
