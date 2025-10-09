@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { PieChart } from "echarts/charts"
@@ -47,7 +46,6 @@ import {
 	GridComponent
 } from "echarts/components"
 import VChart, {THEME_KEY} from "vue-echarts"
-//import { shallowRef } from "vue"
 
 use([
 	CanvasRenderer,
@@ -60,8 +58,7 @@ use([
 	DataZoomInsideComponent,
 ])
 
-const url = 'https://ag.test/api/',
-    minDelay = 1000,
+const minDelay = 1000,
     maxDelay = 2000;
 
 export default {
@@ -199,14 +196,14 @@ export default {
             return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
         },
 		getDone() {
-			axios.get(url + this.modus + "/count")
+			axios.get(this.modus + "/count")
 				.then(resp => {
 					this.done = parseInt(resp.data.count);
 				})
 				.catch(err => console.error(err));
 		},
         getLocations() {
-            axios.get(url + this.modus + "/locations")
+            axios.get(this.modus + "/locations")
                 .then(resp => {
                     this.locations = resp.data.locations;
                     this.count = resp.data.locations.length;
@@ -249,7 +246,7 @@ export default {
             }
         },
 		fetchByPostcode(zipcode) {
-			axios.get(url + this.modus + "/scrape/" + zipcode)
+			axios.get(this.modus + "/scrape/" + zipcode)
 				.then(resp => {
 					if (resp.data.error) {
 						this.entity = null;
@@ -282,7 +279,7 @@ export default {
 		},
         setFound(location) {
 			if(location) {
-				axios.patch(url + this.modus + "/found/" + location.id)
+				axios.patch(this.modus + "/found/" + location.id)
 					.then(resp => {
 						if(resp.data) {
 							this.locations = this.locations.filter(l => l.id !== resp.data.id)
