@@ -4,7 +4,7 @@
 			<div class="col">
 				<div class="card">
 					<div class="card-header">
-						<span v-if="currentLocation">PLZ: {{ currentLocation.plz }}</span>
+						<span v-if="currentLocation">PLZ: {{ currentLocation.zipcode }}</span>
 						<span v-else>Suche kann gestartet werden</span>
 						<span class="ms-5 float-end text-success" v-if="entity" v-html="entity.name"></span>
 					</div>
@@ -245,11 +245,11 @@ export default {
         fetch() {
             this.currentLocation = this.locations[this.counter] ?? null;
             if(this.currentLocation) {
-				this.fetchByPostcode(this.currentLocation.plz);
+				this.fetchByPostcode(this.currentLocation.zipcode);
             }
         },
-		fetchByPostcode(plz) {
-			axios.get(url + this.modus + "/scrape/" + plz)
+		fetchByPostcode(zipcode) {
+			axios.get(url + this.modus + "/scrape/" + zipcode)
 				.then(resp => {
 					if (resp.data.error) {
 						this.entity = null;

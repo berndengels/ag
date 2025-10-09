@@ -5,6 +5,7 @@ namespace App\Libs\Scraper;
 use App\Models\CrawlerLog;
 use App\Models\Location;
 use App\Models\Zipcode;
+use App\Models\ZipcodeUnique;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 use App\Repositories\Traits\ResultParser;
@@ -29,15 +30,15 @@ class Scraper
 	protected $model;
 
 	/**
-	 * @param Location $location
+	 * @param ZipcodeUnique $location
 	 */
 	public function __construct(
-		protected Location|Zipcode|null $location = null
+		protected ZipcodeUnique|null $location = null
 	) {}
 	/**
-	 * @param Location $location
+	 * @param ZipcodeUnique $location
 	 */
-	public function setLocation($location):self
+	public function setLocation(ZipcodeUnique $location):self
 	{
 		$this->location = $location;
 		return $this;

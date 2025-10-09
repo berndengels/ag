@@ -120,11 +120,11 @@ abstract class ApiScraperController extends Controller
         return response()->json($response);
     }
 
-    public function setFounded(Zipcode $zipcode)
+    public function setFounded(ZipcodeUnique $zipcodeUnique)
     {
-		$this->locationModel::whereZipcode($zipcode->zipcode)->update([$this->foundField => 1]);
-		$zipcode = new ZipcodeResource($zipcode);
+		$this->locationModel::whereZipcode($zipcodeUnique->zipcode)->update([$this->foundField => 1]);
+		$zipcodeUnique = new ZipcodeResource($zipcodeUnique);
 
-        return response()->json($zipcode);
+        return response()->json($zipcodeUnique);
     }
 }
