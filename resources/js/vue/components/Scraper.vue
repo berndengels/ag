@@ -12,7 +12,6 @@
 						<div class="row">
 							<div class="col"><v-chart class="chart" :option="chartOption" :autoresize="true" /></div>
 							<div class="col">
-								<!--img class="img-fluid" v-if="image" :src="image" :alt="currentLocation.plz + ' ' + currentLocation.name" /-->
 								<p v-if="errorMsg" v-html="errorMsg" class="text-danger"></p>
 							</div>
 						</div>
