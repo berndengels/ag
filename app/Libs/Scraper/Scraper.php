@@ -35,14 +35,6 @@ class Scraper
 	public function __construct(
 		protected ZipcodeUnique $location
 	) {}
-	/**
-	 * @param ZipcodeUnique $location
-	 */
-	public function setLocation(ZipcodeUnique $location):self
-	{
-		$this->location = $location;
-		return $this;
-	}
 
 	public function run() {
 		if(!$this->location) {
