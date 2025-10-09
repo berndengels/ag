@@ -31,11 +31,14 @@ abstract class ApiScraperController extends Controller
      */
     public function locations()
     {
+		$this->locationModel::where($this->foundField, '=', 1)->get()->each(fn(Zipcode $z) => Zipcode::whereZipcode($z->zipcode)->update([$this->foundField => 1]));
+
         $locations = $this->locationModel::select(['id','zipcode','name'])
 			->where($this->foundField, '=', 0)
             ->groupBy('zipcode')
             ->get(['id','zipcode','name'])
         ;
+
 		$locations = LocationResource::collection($locations);
 
         return response()->json(['locations' => $locations]);
@@ -50,6 +53,7 @@ abstract class ApiScraperController extends Controller
 			->groupBy('zipcode')
             ->count()
         ;
+
         return response()->json(['count' => $count]);
     }
 
@@ -119,8 +123,8 @@ abstract class ApiScraperController extends Controller
 
     public function setFounded(Zipcode $zipcode)
     {
-		$zipcode->update([$this->foundField => 1]);
-		$zipcode->refresh();
+		$this->locationModel::whereZipcode($zipcode->zipcode)->update([$this->foundField => 1]);
+		$zipcode = new LocationResource($zipcode);
 
         return response()->json($zipcode);
     }

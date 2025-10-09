@@ -284,6 +284,9 @@ export default {
 			if(location) {
 				axios.patch(url + this.modus + "/found/" + location.id)
 					.then(resp => {
+						if(resp.data) {
+							this.locations = this.locations.filter(l => l.id !== resp.data.id)
+						}
 					})
 					.catch(err => console.error(err));
 			}
