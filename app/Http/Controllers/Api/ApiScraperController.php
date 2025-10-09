@@ -111,6 +111,7 @@ abstract class ApiScraperController extends Controller
             'entity' => $entity,
             'url'   => $run->getUrl(),
 			'image' => $run->getImage(),
+			'added'	=> $id > 0 ? true : false,
         ];
 
         return response()->json($response);

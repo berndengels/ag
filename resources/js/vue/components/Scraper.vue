@@ -10,9 +10,10 @@
 					</div>
 					<div class="card-body">
 						<div class="row">
-							<div class="col col-lg-4"><v-chart class="chart" :option="chartOption" :autoresize="true" /></div>
-							<div class="col col-lg-6">
-								<img class="img-fluid" v-if="image" :src="image" :alt="currentLocation.plz + ' ' + currentLocation.name" />
+							<div class="col"><v-chart class="chart" :option="chartOption" :autoresize="true" /></div>
+							<div class="col">
+								<!--img class="img-fluid" v-if="image" :src="image" :alt="currentLocation.plz + ' ' + currentLocation.name" /-->
+								<p v-if="errorMsg" v-html="errorMsg" class="text-danger"></p>
 							</div>
 						</div>
 					</div>
@@ -72,6 +73,7 @@ export default {
         return {
 			postcode: null,
             counter: 0,
+			added: 0,
 			done: 0,
             locations: [],
             currentLocation: null,
@@ -82,6 +84,7 @@ export default {
             entity: null,
 			image: null,
             error: false,
+			errorMsg: null,
             info: null,
             url: null,
             intVal: null,
@@ -91,6 +94,13 @@ export default {
 				name: 'gefunden',
 				itemStyle: {
 					color: '#080',
+				}
+			},
+			serieAdded: {
+				value: 0,
+				name: 'hinzugefügt',
+				itemStyle: {
+					color: '#00f',
 				}
 			},
 			serieNotFound: {
@@ -133,7 +143,8 @@ export default {
 						data: [
 							this.serieFound,
 							this.serieNotFound,
-							this.serieRemaining
+							this.serieRemaining,
+							this.serieAdded,
 						],
 						emphasis: {
 							itemStyle: {
@@ -171,6 +182,10 @@ export default {
 		remaining(v) {
 			this.serieRemaining.value = v
 			this.chartOption.series[0].data[3] = this.serieRemaining
+		},
+		added(v) {
+			this.serieAdded.value = v
+			this.chartOption.series[0].data[4] = this.serieAdded
 		},
 	},
     methods: {
@@ -244,6 +259,10 @@ export default {
 						this.image = null;
 						this.notfound++;
 					} else if (resp.data.entity) {
+						if(resp.data.added) {
+							this.added++;
+						}
+						this.errorMsg = null;
 						this.url = resp.data.url;
 						this.entity = resp.data.entity;
 						this.image = resp.data.image;
@@ -252,7 +271,11 @@ export default {
 						this.success++;
 					}
 				})
-				.catch(err => console.info('Error', err));
+				.catch(err => {
+					this.errorMsg = err
+					this.error = true
+					console.info('Error', err)
+				});
 
 			this.remaining--;
 			this.counter++;
