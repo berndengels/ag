@@ -286,6 +286,8 @@ export default {
 					.then(resp => {
 						if(resp.data) {
 							this.locations = this.locations.filter(l => l.id !== resp.data.id)
+							this.count = this.locations.length;
+							this.remaining = this.count;
 						}
 					})
 					.catch(err => console.error(err));
