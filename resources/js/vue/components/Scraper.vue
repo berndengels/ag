@@ -13,6 +13,11 @@
 							<div class="col"><v-chart class="chart" :option="chartOption" :autoresize="true" /></div>
 							<div class="col">
 								<p v-if="errorMsg" v-html="errorMsg" class="text-danger"></p>
+								<div v-if="errorLocations.length > 0">
+									<ul class="list-unstyled listErrors">
+										<li class="text-danger" v-for="item in errorLocations" :key="item" v-html="item"></li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -72,6 +77,7 @@ export default {
 			added: 0,
 			done: 0,
             locations: [],
+			errorLocations: [],
             currentLocation: null,
             count: 0,
 			remaining: 0,
@@ -235,7 +241,7 @@ export default {
                 }
             }, delay)
         },
-        stop(){
+        stop() {
 			this.running = false
             clearInterval(this.intVal);
         },
@@ -263,12 +269,13 @@ export default {
 						this.entity = resp.data.entity;
 						this.image = resp.data.image;
 						this.error = false;
-						this.setFound(this.currentLocation);
 						this.success++;
 					}
 				})
 				.catch(err => {
-					this.errorMsg = err
+					let msg = zipcode + ": " + err
+					this.errorMsg = msg
+					this.errorLocations.push(msg)
 					this.error = true
 					console.info('Error', err)
 				});
@@ -277,19 +284,6 @@ export default {
 			this.counter++;
 			this.done++;
 		},
-        setFound(location) {
-			if(location) {
-				axios.patch(this.modus + "/found/" + location.id)
-					.then(resp => {
-						if(resp.data) {
-							this.locations = this.locations.filter(l => l.id !== resp.data.id)
-							this.count = this.locations.length;
-							this.remaining = this.count;
-						}
-					})
-					.catch(err => console.error(err));
-			}
-        }
     }
 }
 </script>
@@ -298,13 +292,15 @@ export default {
 .container {
 	.card {
 		font-size: 1.0rem;
+		height: auto;
 		color: #666;
 		font-weight: 200;
 		.card-header {
 			font-weight: bold;
 		}
 		.card-body {
-			min-height: 600px;
+			height: 600px;
+			overflow-y: scroll;
 			.chart {
 				width: 500px;
 				height: 500px;
@@ -314,6 +310,11 @@ export default {
 				width: 100%;
 				margin: auto;
 				border: 1px solid grey;
+			}
+			.listErrors {
+				li {
+					font-size: 11rem;
+				}
 			}
 		}
 	}

@@ -31,5 +31,6 @@ class ZipcodeUnique extends Model
 	protected $casts = [
 		'found_jc'	=> 'boolean',
 		'found_aa'	=> 'boolean',
+		'error'	=> 'boolean',
 	];
 }

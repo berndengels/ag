@@ -2,11 +2,7 @@
 
 namespace App\Libs\Scraper;
 
-use App\Models\CrawlerLog;
-use App\Models\Location;
-use App\Models\Zipcode;
 use App\Models\ZipcodeUnique;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 use App\Repositories\Traits\ResultParser;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
@@ -17,9 +13,12 @@ class Scraper
 
 	protected static $baseUrl = 'https://web.arbeitsagentur.de/portal/metasuche/suche/dienststellen';
 	protected $entity;
+	protected $error;
 	protected $image;
 	private $usleep = 1000;
 	private $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:143.0) Gecko/20100101 Firefox/143.0';
+	private $zipApi = "https://zip-api.eu/api/v2/info/zip?fields=placeName&countryCode=DE&postalCode=";
+
 	/**
 	 * @var string
 	 */
@@ -41,7 +40,6 @@ class Scraper
 			throw new Exception('location object must be set!');
 		}
 		try {
-//        $this->url = str_replace(['%CITY%','%PLZ%'], [urlencode($this->location->name), $this->location->zipcode], $this->url);
 			$this->url = trim(str_replace('%PLZ%', $this->location->zipcode, $this->url));
 			$browsershot = Browsershot::url($this->url)
 				->newHeadless()
@@ -55,11 +53,34 @@ class Scraper
 
 			$filter = $crawler->filter('.dienststellen-result a');
 
-			if(!$filter->matches('.dienststellen-result')) {
-//				return $this;
+			if(0 === $filter->count()) {
+				$this->error = $this->location->zipcode;
+				return $this;
+/*
+				$cities = $this->getZipInfo($this->location->zipcode);
+
+				if(isset($cities['error'])) {
+					return $this;
+				}
+
+				if($cities && $cities->count() > 0) {
+					$this->url = $this->url .'&ort=' . urlencode($cities->first());
+					$browsershot = Browsershot::url($this->url)
+						->newHeadless()
+						->dismissDialogs()
+						->waitForSelector('.dienststellen-result a');
+
+					usleep($this->usleep);
+
+					$content = $browsershot->bodyHtml();
+					$crawler = new DomCrawler($content);
+
+					$filter = $crawler->filter('.dienststellen-result a');
+				}
+*/
 			}
 
-			$result = $filter->first();
+			$result = $filter->filter('a')->first();
 
 			$name = $result->filter('h2.title')->first()->text();
 			$address = $result->filter('p.visitor-address span');
@@ -118,10 +139,37 @@ class Scraper
 */
 			}
 		} catch (Exception $e) {
+			$this->error = $this->location->zipcode;
 			$this->log->error($this->location->zipcode . ': ' . $e->getMessage());
 		}
 
 		return $this;
+	}
+
+	private function getZipInfo($zipcode)
+	{
+		$url = $this->zipApi . $zipcode;
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Authorization: Bearer ' . env('ZIP_API_TOKEN')
+		]);
+
+		$response = json_decode(curl_exec($ch));
+
+		if(isset($response->result)) {
+			$response = collect($response->result)->map(fn($item) => $item->attributes->placeName);
+		}
+
+		if (curl_errno($ch)) {
+			$response['error'] = curl_error($ch);
+		}
+
+		curl_close($ch);
+
+		return $response;
 	}
 
 	public function getUrl(): string
@@ -132,6 +180,14 @@ class Scraper
 	public function getEntity()
 	{
 		return $this->entity;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getError()
+	{
+		return $this->error;
 	}
 
 	/**

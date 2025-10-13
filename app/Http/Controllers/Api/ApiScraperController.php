@@ -31,7 +31,11 @@ abstract class ApiScraperController extends Controller
      */
     public function locations()
     {
-        $locations = $this->locationModel::select(['id','zipcode'])->where($this->foundField, '=', 0)->get();
+        $locations = $this->locationModel::select(['id','zipcode'])
+			->where($this->foundField, '=', 0)
+			->whereError(false)
+			->get();
+
 		$locations = ZipcodeResource::collection($locations);
 
         return response()->json(['locations' => $locations]);
@@ -42,7 +46,10 @@ abstract class ApiScraperController extends Controller
      */
     public function count()
     {
-        $count = $this->locationModel::where($this->foundField, '=', 1)->count();
+        $count = $this->locationModel::select()
+			->where($this->foundField, '=', 1)
+			->whereError(false)
+			->count();
 
         return response()->json(['count' => $count]);
     }
@@ -72,8 +79,12 @@ abstract class ApiScraperController extends Controller
         $run = $scraper->run();
 
 		$entity = $run->getEntity();
+		$error = $run->getError();
+		$id = null;
 
-		if($entity) {
+		if($error) {
+			$location->update(['error' => 1]);
+		} elseif($entity) {
 
 			$id = $this->model::insertOrIgnore($entity);
 
@@ -95,10 +106,12 @@ abstract class ApiScraperController extends Controller
 				'agency_id'	=> $model->id,
 				'postcode'	=> $postcode,
 			]);
+
+			$location->update([$this->foundField => 1]);
 		}
 
         $response = [
-            'error' => $run->getEntity() ? false : true,
+            'error' => $run->getError() ? false : true,
             'entity' => $entity,
             'url'   => $run->getUrl(),
 			'image' => $run->getImage(),
